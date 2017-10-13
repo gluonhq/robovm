@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.mobidevelop.robovm</groupId>
+    <groupId>com.gluonhq</groupId>
     <artifactId>org.robovm.eclipse.parent</artifactId>
     <version>2.3.1-ios11-SNAPSHOT</version>
   </parent>
@@ -24,19 +24,19 @@
         <version>1.5</version>
       </dependency>
       <dependency>
-        <groupId>com.mobidevelop.robovm</groupId>
+        <groupId>com.gluonhq</groupId>
         <artifactId>robovm-dist-compiler</artifactId>
         <version>${robovm.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.mobidevelop.robovm</groupId>
+        <groupId>com.gluonhq</groupId>
         <artifactId>robovm-dist</artifactId>
         <version>${robovm.version}</version>
         <classifier>nocompiler</classifier>
         <type>tar.gz</type>
       </dependency>
       <dependency>
-        <groupId>com.mobidevelop.robovm</groupId>
+        <groupId>com.gluonhq</groupId>
         <artifactId>robovm-templater</artifactId>
         <version>${robovm.version}</version>
       </dependency>
@@ -80,17 +80,17 @@
               <artifactId>commons-compress</artifactId>
             </artifactItem>
             <artifactItem>
-              <groupId>com.mobidevelop.robovm</groupId>
+              <groupId>com.gluonhq</groupId>
               <artifactId>robovm-dist-compiler</artifactId>
             </artifactItem>
             <artifactItem>
-              <groupId>com.mobidevelop.robovm</groupId>
+              <groupId>com.gluonhq</groupId>
               <artifactId>robovm-dist</artifactId>
               <classifier>nocompiler</classifier>
               <type>tar.gz</type>
             </artifactItem>
             <artifactItem>
-              <groupId>com.mobidevelop.robovm</groupId>
+              <groupId>com.gluonhq</groupId>
               <artifactId>robovm-templater</artifactId>
             </artifactItem>
           </artifactItems>

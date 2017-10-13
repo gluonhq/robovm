@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.mobidevelop.robovm</groupId>
+    <groupId>com.gluonhq</groupId>
     <artifactId>robovm-compiler-parent</artifactId>
     <version>2.3.1-ios11</version>
   </parent>
@@ -78,12 +78,12 @@
       <version>5.0.3</version>
     </dependency>
     <dependency>
-      <groupId>com.mobidevelop.robovm</groupId>
+      <groupId>com.gluonhq</groupId>
       <artifactId>robovm-llvm</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.mobidevelop.robovm</groupId>
+      <groupId>com.gluonhq</groupId>
       <artifactId>robovm-libimobiledevice</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -93,7 +93,7 @@
       <version>2.5.0-2</version>
     </dependency>
     <dependency>
-      <groupId>com.mobidevelop.robovm</groupId>
+      <groupId>com.gluonhq</groupId>
       <artifactId>robovm-rt</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>

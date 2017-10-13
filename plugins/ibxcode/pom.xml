@@ -2,13 +2,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-      <groupId>com.mobidevelop.robovm</groupId>
+      <groupId>com.gluonhq</groupId>
       <artifactId>robovm-parent</artifactId>
       <version>2.3.1-ios11</version>
       <relativePath>../../</relativePath>
     </parent>
 
-    <groupId>com.mobidevelop.robovm</groupId>
+    <groupId>com.gluonhq</groupId>
     <artifactId>robovm-ibxcode</artifactId>
     <name>RoboVM XCode/IB project generator</name>
     <version>2.3.1-ios11</version>
@@ -42,7 +42,7 @@
         <version>6.0</version>
       </dependency>
       <dependency>
-          <groupId>com.mobidevelop.robovm</groupId>
+          <groupId>com.gluonhq</groupId>
           <artifactId>robovm-compiler</artifactId>
           <version>${project.version}</version>
       </dependency>

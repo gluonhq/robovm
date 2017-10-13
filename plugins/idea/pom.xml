@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.mobidevelop.robovm</groupId>
+    <groupId>com.gluonhq</groupId>
     <artifactId>org.robovm.idea</artifactId>
     <name>RoboVM plugin for Intellij IDEA</name>
     <version>2.3.1-ios11-SNAPSHOT</version>
@@ -24,7 +24,7 @@
             <id>development</id>
             <dependencies>
                 <dependency>
-                    <groupId>com.mobidevelop.robovm</groupId>
+                    <groupId>com.gluonhq</groupId>
                     <artifactId>robovm-compiler</artifactId>
                     <version>${project.version}</version>
                 </dependency>
@@ -86,24 +86,24 @@
             </build>
             <dependencies>
                 <dependency>
-                    <groupId>com.mobidevelop.robovm</groupId>
+                    <groupId>com.gluonhq</groupId>
                     <artifactId>robovm-dist-compiler</artifactId>
                     <version>${project.version}</version>
                     <exclusions>
                         <exclusion>
-                            <groupId>com.mobidevelop.robovm</groupId>
+                            <groupId>com.gluonhq</groupId>
                             <artifactId>robovm-rt</artifactId>
                         </exclusion>
                         <exclusion>
-                            <groupId>com.mobidevelop.robovm</groupId>
+                            <groupId>com.gluonhq</groupId>
                             <artifactId>robovm-objc</artifactId>
                         </exclusion>
                         <exclusion>
-                            <groupId>com.mobidevelop.robovm</groupId>
+                            <groupId>com.gluonhq</groupId>
                             <artifactId>robovm-cocoatouch</artifactId>
                         </exclusion>
                         <exclusion>
-                            <groupId>com.mobidevelop.robovm</groupId>
+                            <groupId>com.gluonhq</groupId>
                             <artifactId>robovm-cacerts-full</artifactId>
                         </exclusion>
                     </exclusions>
@@ -200,7 +200,7 @@
             <version>1.5</version>
         </dependency>
         <dependency>
-            <groupId>com.mobidevelop.robovm</groupId>
+            <groupId>com.gluonhq</groupId>
             <artifactId>robovm-dist</artifactId>
             <version>${project.version}</version>
             <classifier>nocompiler</classifier>
@@ -208,45 +208,45 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>com.mobidevelop.robovm</groupId>
+                    <groupId>com.gluonhq</groupId>
                     <artifactId>robovm-dist-compiler</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.mobidevelop.robovm</groupId>
+                    <groupId>com.gluonhq</groupId>
                     <artifactId>robovm-rt</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.mobidevelop.robovm</groupId>
+                    <groupId>com.gluonhq</groupId>
                     <artifactId>robovm-objc</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.mobidevelop.robovm</groupId>
+                    <groupId>com.gluonhq</groupId>
                     <artifactId>robovm-cocoatouch</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.mobidevelop.robovm</groupId>
+                    <groupId>com.gluonhq</groupId>
                     <artifactId>robovm-cacerts-full</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.mobidevelop.robovm</groupId>
+            <groupId>com.gluonhq</groupId>
             <artifactId>robovm-templater</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>com.mobidevelop.robovm</groupId>
+                    <groupId>com.gluonhq</groupId>
                     <artifactId>robovm-dist-compiler</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.mobidevelop.robovm</groupId>
+            <groupId>com.gluonhq</groupId>
             <artifactId>robovm-ibxcode</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>com.mobidevelop.robovm</groupId>
+                    <groupId>com.gluonhq</groupId>
                     <artifactId>robovm-compiler</artifactId>
                 </exclusion>
             </exclusions>
@@ -320,7 +320,7 @@
                     <stripClassifier>true</stripClassifier>
                     <artifactItems>
                         <artifactItem>
-                            <groupId>com.mobidevelop.robovm</groupId>
+                            <groupId>com.gluonhq</groupId>
                             <artifactId>robovm-dist</artifactId>
                             <classifier>nocompiler</classifier>
                             <type>tar.gz</type>

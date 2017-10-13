@@ -6,7 +6,7 @@
     <maven>3.0</maven>
   </prerequisites>
 
-  <groupId>com.mobidevelop.robovm</groupId>
+  <groupId>com.gluonhq</groupId>
   <artifactId>org.robovm.eclipse.parent</artifactId>
   <version>2.3.1-ios11-SNAPSHOT</version>
   <name>RoboVM for Eclipse</name>

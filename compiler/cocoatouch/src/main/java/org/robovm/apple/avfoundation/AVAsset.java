@@ -38,7 +38,6 @@ import org.robovm.apple.coremedia.*;
 import org.robovm.apple.corevideo.*;
 import org.robovm.apple.mediatoolbox.*;
 import org.robovm.apple.audiotoolbox.*;
-import org.robovm.apple.audiounit.*;
 /*</imports>*/
 
 /*<javadoc>*/
@@ -152,6 +151,11 @@ import org.robovm.apple.audiounit.*;
     @Property(selector = "preferredMediaSelection")
     public native AVMediaSelection getPreferredMediaSelection();
     /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Property(selector = "allMediaSelections")
+    public native NSArray<AVMediaSelection> getAllMediaSelections();
+    /**
      * @since Available in iOS 4.2 and later.
      */
     @Property(selector = "hasProtectedContent")
@@ -166,6 +170,11 @@ import org.robovm.apple.audiounit.*;
      */
     @Property(selector = "containsFragments")
     public native boolean containsFragments();
+    /**
+     * @since Available in iOS 10.2 and later.
+     */
+    @Property(selector = "overallDurationHint")
+    public native @ByVal CMTime getOverallDurationHint();
     /**
      * @since Available in iOS 4.3 and later.
      */

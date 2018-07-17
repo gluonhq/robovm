@@ -58,6 +58,11 @@ import org.robovm.apple.corelocation.*;
     @Property(selector = "isPrimary")
     public native boolean isPrimary();
     /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Property(selector = "homeHubState")
+    public native HMHomeHubState getHomeHubState();
+    /**
      * @since Available in iOS 9.0 and later.
      */
     @Property(selector = "uniqueIdentifier")
@@ -106,6 +111,11 @@ import org.robovm.apple.corelocation.*;
      */
     @Method(selector = "addAndSetupAccessoriesWithCompletionHandler:")
     public native void addAndSetupAccessoriesWithCompletionHandler(@Block VoidBlock1<NSError> completion);
+    /**
+     * @since Available in iOS 11.3 and later.
+     */
+    @Method(selector = "addAndSetupAccessoriesWithPayload:completionHandler:")
+    public native void addAndSetupAccessories(HMAccessorySetupPayload payload, @Block VoidBlock2<NSArray<HMAccessory>, NSError> completion);
     /**
      * @since Available in iOS 9.0 and later.
      */

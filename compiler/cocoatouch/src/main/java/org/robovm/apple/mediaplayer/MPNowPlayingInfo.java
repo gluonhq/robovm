@@ -445,6 +445,11 @@ import org.robovm.apple.coregraphics.*;
         @GlobalValue(symbol="MPNowPlayingInfoPropertyExternalUserProfileIdentifier", optional=true)
         public static native NSString ExternalUserProfileIdentifier();
         /**
+         * @since Available in iOS 11.0 and later.
+         */
+        @GlobalValue(symbol="MPNowPlayingInfoPropertyServiceIdentifier", optional=true)
+        public static native NSString ServiceIdentifier();
+        /**
          * @since Available in iOS 10.0 and later.
          */
         @GlobalValue(symbol="MPNowPlayingInfoPropertyPlaybackProgress", optional=true)
@@ -454,6 +459,16 @@ import org.robovm.apple.coregraphics.*;
          */
         @GlobalValue(symbol="MPNowPlayingInfoPropertyMediaType", optional=true)
         public static native NSString MediaType();
+        /**
+         * @since Available in iOS 10.3 and later.
+         */
+        @GlobalValue(symbol="MPNowPlayingInfoPropertyAssetURL", optional=true)
+        public static native NSString AssetURL();
+        /**
+         * @since Available in iOS 11.1 and later.
+         */
+        @GlobalValue(symbol="MPNowPlayingInfoPropertyCurrentPlaybackDate", optional=true)
+        public static native NSString CurrentPlaybackDate();
     }
     /*</keys>*/
 }

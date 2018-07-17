@@ -82,7 +82,7 @@ import org.robovm.apple.uikit.*;
     @Method(selector = "sendData:withTransportType:completionHandler:")
     public native void sendData(NSData data, GKTransportType transport, @Block VoidBlock1<NSError> completionHandler);
     @Method(selector = "sendMessageWithLocalizedFormatKey:arguments:data:toPlayers:badgePlayers:completionHandler:")
-    public native void sendMessage(String key, NSArray<?> arguments, NSData data, NSArray<GKCloudPlayer> players, boolean badgePlayers, @Block VoidBlock1<NSError> completionHandler);
+    public native void sendMessage(String key, NSArray<NSString> arguments, NSData data, NSArray<GKCloudPlayer> players, boolean badgePlayers, @Block VoidBlock1<NSError> completionHandler);
     @Method(selector = "clearBadgeForPlayers:completionHandler:")
     public native void clearBadge(NSArray<GKCloudPlayer> players, @Block VoidBlock1<NSError> completionHandler);
     @Method(selector = "createSessionInContainer:withTitle:maxConnectedPlayers:completionHandler:")
@@ -103,5 +103,17 @@ import org.robovm.apple.uikit.*;
      */
     @Method(selector = "removeEventListener:")
     public static native void removeEventListener(GKGameSessionEventListener listener);
+    @Method(selector = "postSession:didAddPlayer:")
+    public static native void didAddPlayer(GKGameSession session, GKCloudPlayer player);
+    @Method(selector = "postSession:didRemovePlayer:")
+    public static native void didRemovePlayer(GKGameSession session, GKCloudPlayer player);
+    @Method(selector = "postSession:player:didChangeConnectionState:")
+    public static native void didChangeConnectionState(GKGameSession session, GKCloudPlayer player, GKConnectionState newState);
+    @Method(selector = "postSession:player:didSaveData:")
+    public static native void didSaveData(GKGameSession session, GKCloudPlayer player, NSData data);
+    @Method(selector = "postSession:didReceiveData:fromPlayer:")
+    public static native void didReceiveData(GKGameSession session, NSData data, GKCloudPlayer player);
+    @Method(selector = "postSession:didReceiveMessage:withData:fromPlayer:")
+    public static native void didReceiveMessage(GKGameSession session, String message, NSData data, GKCloudPlayer player);
     /*</methods>*/
 }

@@ -121,8 +121,9 @@ import org.robovm.apple.dispatch.*;
     /*<bind>*/static { ObjCRuntime.bind(NSObject.class); }/*</bind>*/
     /*<constants>*//*</constants>*/
     private NSKeyValueCoder keyValueCoder;
-    
-    
+
+
+    @Method(selector = "init")
     public NSObject() {
         if (!forceSkipInit)
             initObject(init());
@@ -453,14 +454,14 @@ import org.robovm.apple.dispatch.*;
     @Method(selector = "didChangeValueForKey:withSetMutation:usingObjects:")
     public native void didChangeValue(String key, NSKeyValueSetMutationKind mutationKind, NSSet<?> objects);
     @Method(selector = "performSelectorOnMainThread:withObject:waitUntilDone:modes:")
-    public final native void performSelectorOnMainThread(Selector aSelector, NSObject arg, boolean wait, NSArray<?> array);
+    public final native void performSelectorOnMainThread(Selector aSelector, NSObject arg, boolean wait, NSArray<NSString> array);
     @Method(selector = "performSelectorOnMainThread:withObject:waitUntilDone:")
     public final native void performSelectorOnMainThread(Selector aSelector, NSObject arg, boolean wait);
     /**
      * @since Available in iOS 2.0 and later.
      */
     @Method(selector = "performSelector:onThread:withObject:waitUntilDone:modes:")
-    public final native void performSelector(Selector aSelector, NSThread thr, NSObject arg, boolean wait, NSArray<?> array);
+    public final native void performSelector(Selector aSelector, NSThread thr, NSObject arg, boolean wait, NSArray<NSString> array);
     /**
      * @since Available in iOS 2.0 and later.
      */

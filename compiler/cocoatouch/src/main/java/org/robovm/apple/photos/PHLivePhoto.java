@@ -32,6 +32,9 @@ import org.robovm.apple.coregraphics.*;
 import org.robovm.apple.uikit.*;
 import org.robovm.apple.corelocation.*;
 import org.robovm.apple.avfoundation.*;
+import org.robovm.apple.coreimage.*;
+import org.robovm.apple.coremedia.*;
+import org.robovm.apple.imageio.*;
 /*</imports>*/
 
 /*<javadoc>*/
@@ -42,23 +45,25 @@ import org.robovm.apple.avfoundation.*;
 /*<annotations>*/@Library("Photos") @NativeClass/*</annotations>*/
 /*<visibility>*/public/*</visibility>*/ class /*<name>*/PHLivePhoto/*</name>*/ 
     extends /*<extends>*/NSObject/*</extends>*/ 
-    /*<implements>*//*</implements>*/ {
+    /*<implements>*/implements NSSecureCoding/*</implements>*/ {
 
     /*<ptr>*/public static class PHLivePhotoPtr extends Ptr<PHLivePhoto, PHLivePhotoPtr> {}/*</ptr>*/
     /*<bind>*/static { ObjCRuntime.bind(PHLivePhoto.class); }/*</bind>*/
     /*<constants>*/
     public static final int RequestIDInvalid = 0;
-    public static final long FrameTypePhoto = 0L;
-    public static final long FrameTypeVideo = 1L;
     /*</constants>*/
     /*<constructors>*/
     public PHLivePhoto() {}
     protected PHLivePhoto(Handle h, long handle) { super(h, handle); }
     protected PHLivePhoto(SkipInit skipInit) { super(skipInit); }
+    @Method(selector = "initWithCoder:")
+    public PHLivePhoto(NSCoder decoder) { super((SkipInit) null); initObject(init(decoder)); }
     /*</constructors>*/
     /*<properties>*/
     @Property(selector = "size")
     public native @ByVal CGSize getSize();
+    @Property(selector = "supportsSecureCoding")
+    public static native boolean supportsSecureCoding();
     /*</properties>*/
     /*<members>*//*</members>*/
     /*<methods>*/
@@ -78,12 +83,12 @@ import org.robovm.apple.avfoundation.*;
     @GlobalValue(symbol="PHLivePhotoInfoCancelledKey", optional=true)
     public static native String InfoCancelledKey();
     /**
-     * @since Available in iOS 10.0 and later.
+     * @since Available in iOS 11.0 and later.
      */
     @GlobalValue(symbol="PHLivePhotoShouldRenderAtPlaybackTime", optional=true)
     public static native String ShouldRenderAtPlaybackTime();
     /**
-     * @since Available in iOS 10.0 and later.
+     * @since Available in iOS 11.0 and later.
      */
     @GlobalValue(symbol="PHLivePhotoShouldRenderAtPlaybackTime", optional=true)
     public static native void ShouldRenderAtPlaybackTime(String v);
@@ -92,5 +97,9 @@ import org.robovm.apple.avfoundation.*;
     public static native int requestLivePhoto(NSArray<NSURL> fileURLs, UIImage image, @ByVal CGSize targetSize, PHImageContentMode contentMode, @Block VoidBlock2<PHLivePhoto, NSDictionary<?, ?>> resultHandler);
     @Method(selector = "cancelLivePhotoRequestWithRequestID:")
     public static native void cancelLivePhotoRequest(int requestID);
+    @Method(selector = "encodeWithCoder:")
+    public native void encode(NSCoder coder);
+    @Method(selector = "initWithCoder:")
+    protected native @Pointer long init(NSCoder decoder);
     /*</methods>*/
 }

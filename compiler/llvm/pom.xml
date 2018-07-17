@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.gluonhq</groupId>
     <artifactId>robovm-compiler-parent</artifactId>
-    <version>2.3.1-ios11</version>
+    <version>2.3.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>robovm-llvm</artifactId>
@@ -34,6 +34,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>  
   </dependencies>
 

@@ -1,5 +1,5 @@
 package: org.robovm.apple.photos
-include: [foundation.yaml, coregraphics.yaml, uikit.yaml, corelocation.yaml, avfoundation.yaml]
+include: [foundation.yaml, coregraphics.yaml, uikit.yaml, corelocation.yaml, avfoundation.yaml, coreimage.yaml, coremedia.yaml, imageio.yaml]
 library: Photos
 framework: Photos
 clang_args: ['-x', 'objective-c']
@@ -37,7 +37,9 @@ enums:
     PHImageRequestOptionsResizeMode: {}
     PHVideoRequestOptionsVersion: {}
     PHVideoRequestOptionsDeliveryMode: {}
-        
+    PHLivePhotoFrameType: {}
+    PHAssetPlaybackStyle: {} #since 11.0
+
 classes:
     PHLivePhotoRequestOptions: {}
     PHLivePhoto:
@@ -387,7 +389,7 @@ classes:
             '+changeDetailsFromFetchResult:toFetchResult:changedObjects:':
                 name: create
                 constructor: true
-                return_type: '<T extends PHObject> @Pointer long'
+                return_type: '@Pointer <T extends PHObject> long'
                 parameters:
                     fromResult:
                         type: PHFetchResult<T>
@@ -453,8 +455,16 @@ classes:
         properties:
             'progressHandler':
                 type: '@Block VoidBlock3<Double, NSError, BooleanPtr>'
+    PHLivePhotoEditingContext:
+        methods:
+            '-prepareLivePhotoForPlaybackWithTargetSize:options:completionHandler:':
+                name: prepareLivePhotoForPlayback
+            '-saveLivePhotoToOutput:options:completionHandler:':
+                name: saveLivePhoto
 
 protocols:
+    PHLivePhotoFrame: {}
+
     PHPhotoLibraryChangeObserver: # DONE
         methods:
             '-photoLibraryDidChange:':

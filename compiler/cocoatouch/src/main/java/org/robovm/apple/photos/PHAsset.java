@@ -32,6 +32,9 @@ import org.robovm.apple.coregraphics.*;
 import org.robovm.apple.uikit.*;
 import org.robovm.apple.corelocation.*;
 import org.robovm.apple.avfoundation.*;
+import org.robovm.apple.coreimage.*;
+import org.robovm.apple.coremedia.*;
+import org.robovm.apple.imageio.*;
 /*</imports>*/
 
 /*<javadoc>*/
@@ -53,6 +56,11 @@ import org.robovm.apple.avfoundation.*;
     protected PHAsset(SkipInit skipInit) { super(skipInit); }
     /*</constructors>*/
     /*<properties>*/
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Property(selector = "playbackStyle")
+    public native PHAssetPlaybackStyle getPlaybackStyle();
     @Property(selector = "mediaType")
     public native PHAssetMediaType getMediaType();
     @Property(selector = "mediaSubtypes")
@@ -102,13 +110,18 @@ import org.robovm.apple.avfoundation.*;
     public static native PHFetchResult<PHAsset> fetchAssets(PHFetchOptions options);
     @Method(selector = "fetchAssetsWithMediaType:options:")
     public static native PHFetchResult<PHAsset> fetchAssetsWithMediaType(PHAssetMediaType mediaType, PHFetchOptions options);
+    /**
+     * @since Available in iOS 8.0 and later.
+     * @deprecated Deprecated in iOS 11.0.
+     */
+    @Deprecated
     @Method(selector = "fetchAssetsWithALAssetURLs:options:")
     public static native PHFetchResult<PHAsset> fetchAssetsWithALAssetURLs(NSArray<NSURL> assetURLs, PHFetchOptions options);
     /**
      * @since Available in iOS 8.0 and later.
      */
     @Method(selector = "requestContentEditingInputWithOptions:completionHandler:")
-    public native @MachineSizedUInt long requestContentEditingInput(PHContentEditingInputRequestOptions options, @Block VoidBlock2<PHContentEditingInput, NSDictionary<NSString, NSObject>> completionHandler);
+    public native @MachineSizedUInt long requestContentEditingInput(PHContentEditingInputRequestOptions options, @Block VoidBlock2<PHContentEditingInput, NSDictionary<?, ?>> completionHandler);
     /**
      * @since Available in iOS 8.0 and later.
      */

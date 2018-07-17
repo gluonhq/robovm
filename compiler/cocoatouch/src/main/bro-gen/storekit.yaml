@@ -8,17 +8,24 @@ headers:
     - /System/Library/Frameworks/StoreKit.framework/Headers/StoreKitDefines.h
 typedefs:
     'void (^)(BOOL, NSError *)': '@Block VoidBlock2<Boolean, NSError>'
-    
+
 enums:
     SKDownloadState: {first: SKDownloadStateWaiting, marshaler: ValuedEnum.AsMachineSizedSIntMarshaler}
     SKPaymentTransactionState: {first: SKPaymentTransactionStatePurchasing, marshaler: ValuedEnum.AsMachineSizedSIntMarshaler}
     SKErrorCode: {first: SKErrorUnknown}
     SKCloudServiceAuthorizationStatus: {}
     SKCloudServiceCapability: {}
+    SKProductStorePromotionVisibility: {} #since 11.0
+    SKProductPeriodUnit: {}
+    SKProductDiscountPaymentMode: {}
 
 classes:
-    SKCloudServiceController: {}
-
+    SKCloudServiceController: #since 9.3
+        methods:
+            '-requestUserTokenForDeveloperToken:completionHandler:':
+                name: requestUserToken
+            '-requestPersonalizationTokenForClientToken:withCompletionHandler:':
+                name: requestPersonalizationToken
     SKError:
         extends: NSError
         annotations: ['@StronglyLinked']
@@ -109,7 +116,32 @@ classes:
                     parameters:
                         type: SKStoreProductParameters
 
+    SKCloudServiceSetupViewController:
+        methods:
+            '-loadWithOptions:completionHandler:':
+                name: load
+                parameters:
+                    options:
+                        type: SKCloudServiceSetupOptions
+    SKStoreReviewController: {}
+    SKProductStorePromotionController: #since 11.0
+        methods:
+            '-fetchStorePromotionVisibilityForProduct:completionHandler:':
+                name: fetchStorePromotionVisibility
+            '-updateStorePromotionVisibility:forProduct:completionHandler:':
+                trim_after_first_colon: true
+            '-updateStorePromotionOrder:completionHandler:':
+                trim_after_first_colon: true
+    SKAdNetwork: {} #since 11.3
+    SKProductDiscount: {} #since 11.2
+    SKProductSubscriptionPeriod: {} #since 11.2
+
 protocols:
+    SKCloudServiceSetupViewControllerDelegate:
+        methods:
+            '-cloudServiceSetupViewControllerDidDismiss:':
+                  name: didDismiss
+    
     SKPaymentTransactionObserver: # DONE
         methods:
             '-paymentQueue:updatedTransactions:':
@@ -134,6 +166,8 @@ protocols:
                     queue: {}
                     downloads:
                         type: NSArray<SKDownload>
+            '-paymentQueue:shouldAddStorePayment:forProduct:':
+                name: shouldAddStorePayment
     SKProductsRequestDelegate: # DONE
         methods:
             '-productsRequest:didReceiveResponse:':
@@ -204,6 +238,15 @@ values:
     SKCloudServiceCapabilitiesDidChangeNotification:
         class: SKCloudServiceController
         name: CapabilitiesDidChangeNotification
+    SKStorefrontCountryCodeDidChangeNotification:
+        class: SKCloudServiceController
+        name: StorefrontCountryCodeDidChangeNotification
+
+    # SKCloudServiceSetup
+    SKCloudServiceSetup(.*):
+        dictionary: SKCloudServiceSetupOptions
+        name: '#{g[0]}'
+        type: NSString
 
     # Make sure we don't miss any values if new ones are introduced in a later version
     (k?SK.*):

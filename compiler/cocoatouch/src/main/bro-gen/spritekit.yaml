@@ -1,5 +1,5 @@
 package: org.robovm.apple.spritekit
-include: [foundation.yaml, uikit.yaml, coregraphics.yaml, dispatch.yaml, coreimage.yaml, avfoundation.yaml, glkit.yaml, scenekit.yaml, gameplaykit.yaml]
+include: [foundation.yaml, uikit.yaml, coregraphics.yaml, dispatch.yaml, coreimage.yaml, avfoundation.yaml, glkit.yaml, scenekit.yaml, gameplaykit.yaml, metal]
 library: SpriteKit
 framework: SpriteKit
 clang_args: ['-x', 'objective-c']
@@ -11,7 +11,6 @@ typedefs:
     'void (^)(SKNode *, BOOL *)': '@Block VoidBlock2<SKNode, BooleanPtr>'
     'void (^)(SKPhysicsBody *, BOOL *)': '@Block VoidBlock2<SKPhysicsBody, BooleanPtr>'
     'void (^)(SKPhysicsBody *, CGPoint, CGVector, BOOL *)': '@Block VoidBlock4<SKPhysicsBody, CGPoint, CGVector, BooleanPtr>'
-    vector_float3: '@ByVal SKVector3'
 
 enums:
     SKActionTimingMode: {}
@@ -29,6 +28,7 @@ enums:
     SKTileDefinitionRotation: {}
     SKTileSetType: {}
     SKTileAdjacencyMask: {prefix: SKTile}
+    SKNodeFocusBehavior: {} #since 11.0
 
 categories:
     SKNodeTouches: # DONE
@@ -438,6 +438,20 @@ classes:
             '+nodeWithFileNamed:':
                 name: create
                 constructor: true
+            '-setValue:forAttributeNamed:':
+                trim_after_first_colon: true
+            '-insertChild:atIndex:':
+                trim_after_first_colon: true
+            '-enumerateChildNodesWithName:usingBlock:':
+                name: enumerateChildNodes
+            '-runAction:completion:':
+                trim_after_first_colon: true
+            '-runAction:withKey:':
+                trim_after_first_colon: true
+            '-convertPoint:fromNode:':
+                name: convertPointFromNode
+            '-convertPoint:toNode:':
+                name: convertPointToNode
     SKPhysicsBody: # DONE
         properties:
             'joints':
@@ -629,6 +643,8 @@ classes:
                 name: createWithPoints
             '+shapeNodeWithSplinePoints:count:':
                 name: createWithSplinePoints
+            '-setValue:forAttributeNamed:':
+                trim_after_first_colon: true
     SKSpriteNode: # DONE
         methods:
             '-init.*':
@@ -761,6 +777,35 @@ classes:
                 name: convertPointToScene
             '-convertPoint:fromScene:':
                 name: convertPointFromScene
+    SKRenderer: #since 11.0
+        methods:
+            '-renderWithViewport:commandBuffer:renderPassDescriptor:':
+                name: render
+            '-renderWithViewport:renderCommandEncoder:renderPassDescriptor:commandQueue:':
+                name: render
+    SKTileMapNode: #since 10.0
+        methods:
+            '-init.*':
+                name: init
+            '-setValue:forAttributeNamed:':
+                trim_after_first_colon: true
+            '-tileDefinitionAtColumn:row:':
+                name: getTileDefinition
+            '-tileGroupAtColumn:row:':
+                name: getTileGroup
+            '-setTileGroup:forColumn:row:':
+                name: setTileGroup
+            '-setTileGroup:andTileDefinition:forColumn:row:':
+                name: setTileGroup
+            '-centerOfTileAtColumn:row:':
+                name: getCenterOfTile
+            '+tileMapNodeWithTileSet:columns:rows:tileSize:':
+                exclude: true
+            '+tileMapNodeWithTileSet:columns:rows:tileSize:fillWithTileGroup:':
+                exclude: true
+            '+tileMapNodeWithTileSet:columns:rows:tileSize:tileGroupLayout:':
+                exclude: true
+    SKTransformNode: {} #since 11.0
 
 protocols:
     SKWarpable: {}

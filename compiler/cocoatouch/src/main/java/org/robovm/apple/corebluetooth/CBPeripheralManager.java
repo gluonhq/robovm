@@ -39,7 +39,7 @@ import org.robovm.apple.dispatch.*;
 /*</javadoc>*/
 /*<annotations>*/@Library("CoreBluetooth") @NativeClass/*</annotations>*/
 /*<visibility>*/public/*</visibility>*/ class /*<name>*/CBPeripheralManager/*</name>*/ 
-    extends /*<extends>*/CBManager/*</extends>*/ 
+    extends /*<extends>*/NSObject/*</extends>*/
     /*<implements>*//*</implements>*/ {
 
     /*<ptr>*/public static class CBPeripheralManagerPtr extends Ptr<CBPeripheralManager, CBPeripheralManagerPtr> {}/*</ptr>*/
@@ -68,6 +68,8 @@ import org.robovm.apple.dispatch.*;
     public native boolean isAdvertising();
     /*</properties>*/
     /*<members>*//*</members>*/
+    @Property(selector = "state")
+    public native CBManagerState getState(); //TODO CBManager state method, but can't inherit for compatibility so manually declare.
     /*<methods>*/
     @WeaklyLinked
     @Method(selector = "initWithDelegate:queue:")
@@ -94,6 +96,16 @@ import org.robovm.apple.dispatch.*;
     public native void respondToRequest(CBATTRequest request, CBATTErrorCode result);
     @Method(selector = "updateValue:forCharacteristic:onSubscribedCentrals:")
     public native boolean updateValue(NSData value, CBMutableCharacteristic characteristic, NSArray<CBCentral> centrals);
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Method(selector = "publishL2CAPChannelWithEncryption:")
+    public native void publishL2CAPChannelWithEncryption(boolean encryptionRequired);
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Method(selector = "unpublishL2CAPChannel:")
+    public native void unpublishL2CAPChannel(short PSM);
     /**
      * @since Available in iOS 7.0 and later.
      */

@@ -32,6 +32,9 @@ import org.robovm.apple.coregraphics.*;
 import org.robovm.apple.uikit.*;
 import org.robovm.apple.corelocation.*;
 import org.robovm.apple.avfoundation.*;
+import org.robovm.apple.coreimage.*;
+import org.robovm.apple.coremedia.*;
+import org.robovm.apple.imageio.*;
 /*</imports>*/
 
 /*<javadoc>*/
@@ -64,6 +67,11 @@ import org.robovm.apple.avfoundation.*;
     public native CLLocation getLocation();
     @Property(selector = "uniformTypeIdentifier")
     public native String getUniformTypeIdentifier();
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Property(selector = "playbackStyle")
+    public native PHAssetPlaybackStyle getPlaybackStyle();
     @Property(selector = "adjustmentData")
     public native PHAdjustmentData getAdjustmentData();
     @WeaklyLinked

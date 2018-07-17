@@ -75,6 +75,7 @@ import org.robovm.compiler.plugin.objc.ObjCMemberPlugin;
 import org.robovm.compiler.plugin.objc.ObjCProtocolProxyPlugin;
 import org.robovm.compiler.target.ConsoleTarget;
 import org.robovm.compiler.target.Target;
+import org.robovm.compiler.target.framework.FrameworkTarget;
 import org.robovm.compiler.target.ios.IOSTarget;
 import org.robovm.compiler.target.ios.ProvisioningProfile;
 import org.robovm.compiler.target.ios.SigningIdentity;
@@ -151,6 +152,10 @@ public class Config {
     private ArrayList<String> weakFrameworks;
     @ElementList(required = false, entry = "path")
     private ArrayList<File> frameworkPaths;
+    @ElementList(required = false, entry = "extension")
+    private ArrayList<AppExtension> appExtensions;
+    @ElementList(required = false, entry = "path")
+    private ArrayList<File> appExtensionPaths;
     @ElementList(required = false, entry = "resource")
     private ArrayList<Resource> resources;   
     @ElementList(required = false, entry = "classpathentry")
@@ -198,6 +203,7 @@ public class Config {
     private boolean skipLinking = false;
     private boolean skipInstall = false;
     private boolean dumpIntermediates = false;
+    private boolean manuallyPreparedForLaunch = false;
     private int threads = Runtime.getRuntime().availableProcessors();
     private Logger logger = Logger.NULL_LOGGER;
 
@@ -317,6 +323,10 @@ public class Config {
         return dumpIntermediates;
     }
 
+    public boolean isManuallyPreparedForLaunch() {
+        return manuallyPreparedForLaunch;
+    }
+
     public boolean isSkipRuntimeLib() {
         return skipRuntimeLib != null && skipRuntimeLib.booleanValue();
     }
@@ -407,6 +417,16 @@ public class Config {
     public List<File> getFrameworkPaths() {
         return frameworkPaths == null ? Collections.<File> emptyList()
                 : Collections.unmodifiableList(frameworkPaths);
+    }
+
+    public List<AppExtension> getAppExtensions() {
+        return appExtensions == null ? Collections.<AppExtension> emptyList()
+                : Collections.unmodifiableList(appExtensions);
+    }
+
+    public List<File> getAppExtensionPaths() {
+        return appExtensionPaths == null ? Collections.<File> emptyList()
+                : Collections.unmodifiableList(appExtensionPaths);
     }
 
     public List<Resource> getResources() {
@@ -602,6 +622,14 @@ public class Config {
 
     public File getLinesLlFile(Clazz clazz) {
         return new File(getCacheDir(clazz.getPath()), getFileName(clazz, "class.lines.ll"));
+    }
+
+    public File getDebugInfoOFile(Clazz clazz) {
+        return new File(getCacheDir(clazz.getPath()), getFileName(clazz, "class.debuginfo.o"));
+    }
+
+    public File getDebugInfoLlFile(Clazz clazz) {
+        return new File(getCacheDir(clazz.getPath()), getFileName(clazz, "class.debuginfo.ll"));
     }
 
     public File getInfoFile(Clazz clazz) {
@@ -850,6 +878,8 @@ public class Config {
                 target = new ConsoleTarget();
             } else if (IOSTarget.TYPE.equals(targetType)) {
                 target = new IOSTarget();
+            } else if (FrameworkTarget.TYPE.equals(targetType)) {
+                target = new FrameworkTarget();
             } else {
                 for (TargetPlugin plugin : getTargetPlugins()) {
                     if (plugin.getTarget().getType().equals(targetType)) {
@@ -1089,6 +1119,18 @@ public class Config {
         }
     }
 
+    /**
+     * reads configuration from disk without any analysis
+     */
+    public static Config loadRawConfig(File contentRoot) throws IOException {
+        // dkimitsa: config retrieved this way shall not be used for any compilation needs
+        // just for IB and other UI related things
+        Builder builder = new Builder();
+        builder.readProjectProperties(contentRoot, false);
+        builder.readProjectConfig(contentRoot, false);
+        return builder.config;
+    }
+
     public static class Builder {
         protected final Config config;
 
@@ -1204,6 +1246,11 @@ public class Config {
 
         public Builder dumpIntermediates(boolean b) {
             config.dumpIntermediates = b;
+            return this;
+        }
+
+        public Builder manuallyPreparedForLaunch(boolean b) {
+            config.manuallyPreparedForLaunch = b;
             return this;
         }
 
@@ -1349,6 +1396,39 @@ public class Config {
                 config.frameworkPaths = new ArrayList<File>();
             }
             config.frameworkPaths.add(frameworkPath);
+            return this;
+        }
+
+        public Builder clearExtensions() {
+            if (config.appExtensions != null) {
+                config.appExtensions.clear();
+            }
+            return this;
+        }
+
+        public Builder addExtension(String name, String profile) {
+            if (config.appExtensions == null) {
+                config.appExtensions = new ArrayList<>();
+            }
+            AppExtension extension = new AppExtension();
+            extension.name = name;
+            extension.profile = profile;
+            config.appExtensions.add(extension);
+            return this;
+        }
+
+        public Builder clearExtensionPaths() {
+            if (config.appExtensionPaths != null) {
+                config.appExtensionPaths.clear();
+            }
+            return this;
+        }
+
+        public Builder addExtenaionPath(File extensionPath) {
+            if (config.appExtensionPaths == null) {
+                config.appExtensionPaths = new ArrayList<File>();
+            }
+            config.appExtensionPaths.add(extensionPath);
             return this;
         }
 

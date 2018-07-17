@@ -38,7 +38,7 @@ import org.robovm.apple.foundation.*;
 /*<annotations>*/@Library("Contacts") @NativeClass/*</annotations>*/
 /*<visibility>*/public/*</visibility>*/ class /*<name>*/CNPostalAddress/*</name>*/ 
     extends /*<extends>*/NSObject/*</extends>*/ 
-    /*<implements>*//*</implements>*/ {
+    /*<implements>*/implements NSSecureCoding/*</implements>*/ {
 
     /*<ptr>*/public static class CNPostalAddressPtr extends Ptr<CNPostalAddress, CNPostalAddressPtr> {}/*</ptr>*/
     /*<bind>*/static { ObjCRuntime.bind(CNPostalAddress.class); }/*</bind>*/
@@ -47,12 +47,24 @@ import org.robovm.apple.foundation.*;
     public CNPostalAddress() {}
     protected CNPostalAddress(Handle h, long handle) { super(h, handle); }
     protected CNPostalAddress(SkipInit skipInit) { super(skipInit); }
+    @Method(selector = "initWithCoder:")
+    public CNPostalAddress(NSCoder decoder) { super((SkipInit) null); initObject(init(decoder)); }
     /*</constructors>*/
     /*<properties>*/
     @Property(selector = "street")
     public native String getStreet();
+    /**
+     * @since Available in iOS 10.3 and later.
+     */
+    @Property(selector = "subLocality")
+    public native String getSubLocality();
     @Property(selector = "city")
     public native String getCity();
+    /**
+     * @since Available in iOS 10.3 and later.
+     */
+    @Property(selector = "subAdministrativeArea")
+    public native String getSubAdministrativeArea();
     @Property(selector = "state")
     public native String getState();
     @Property(selector = "postalCode")
@@ -61,10 +73,16 @@ import org.robovm.apple.foundation.*;
     public native String getCountry();
     @Property(selector = "ISOCountryCode")
     public native String getISOCountryCode();
+    @Property(selector = "supportsSecureCoding")
+    public static native boolean supportsSecureCoding();
     /*</properties>*/
     /*<members>*//*</members>*/
     /*<methods>*/
     @Method(selector = "localizedStringForKey:")
     public static native String getLocalizedProperty(CNPostalAddressPropertyKey key);
+    @Method(selector = "encodeWithCoder:")
+    public native void encode(NSCoder coder);
+    @Method(selector = "initWithCoder:")
+    protected native @Pointer long init(NSCoder decoder);
     /*</methods>*/
 }

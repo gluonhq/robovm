@@ -50,6 +50,11 @@ import org.robovm.apple.coregraphics.*;
     protected MDLObjectContainer(SkipInit skipInit) { super(skipInit); }
     /*</constructors>*/
     /*<properties>*/
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Property(selector = "count")
+    public native @MachineSizedUInt long getCount();
     @Property(selector = "objects")
     public native NSArray<MDLObject> getObjects();
     /*</properties>*/
@@ -59,5 +64,10 @@ import org.robovm.apple.coregraphics.*;
     public native void addObject(MDLObject object);
     @Method(selector = "removeObject:")
     public native void removeObject(MDLObject object);
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Method(selector = "objectAtIndexedSubscript:")
+    public native MDLObject objectAtIndexedSubscript(@MachineSizedUInt long index);
     /*</methods>*/
 }

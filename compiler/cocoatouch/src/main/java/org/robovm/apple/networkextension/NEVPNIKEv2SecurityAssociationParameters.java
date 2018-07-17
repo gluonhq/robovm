@@ -28,6 +28,7 @@ import org.robovm.rt.bro.*;
 import org.robovm.rt.bro.annotation.*;
 import org.robovm.rt.bro.ptr.*;
 import org.robovm.apple.foundation.*;
+import org.robovm.apple.security.*;
 /*</imports>*/
 
 /*<javadoc>*/
@@ -38,7 +39,7 @@ import org.robovm.apple.foundation.*;
 /*<annotations>*/@Library("NetworkExtension") @NativeClass/*</annotations>*/
 /*<visibility>*/public/*</visibility>*/ class /*<name>*/NEVPNIKEv2SecurityAssociationParameters/*</name>*/ 
     extends /*<extends>*/NSObject/*</extends>*/ 
-    /*<implements>*//*</implements>*/ {
+    /*<implements>*/implements NSSecureCoding/*</implements>*/ {
 
     /*<ptr>*/public static class NEVPNIKEv2SecurityAssociationParametersPtr extends Ptr<NEVPNIKEv2SecurityAssociationParameters, NEVPNIKEv2SecurityAssociationParametersPtr> {}/*</ptr>*/
     /*<bind>*/static { ObjCRuntime.bind(NEVPNIKEv2SecurityAssociationParameters.class); }/*</bind>*/
@@ -47,6 +48,8 @@ import org.robovm.apple.foundation.*;
     public NEVPNIKEv2SecurityAssociationParameters() {}
     protected NEVPNIKEv2SecurityAssociationParameters(Handle h, long handle) { super(h, handle); }
     protected NEVPNIKEv2SecurityAssociationParameters(SkipInit skipInit) { super(skipInit); }
+    @Method(selector = "initWithCoder:")
+    public NEVPNIKEv2SecurityAssociationParameters(NSCoder decoder) { super((SkipInit) null); initObject(init(decoder)); }
     /*</constructors>*/
     /*<properties>*/
     /**
@@ -89,9 +92,14 @@ import org.robovm.apple.foundation.*;
      */
     @Property(selector = "setLifetimeMinutes:")
     public native void setLifetimeMinutes(int v);
+    @Property(selector = "supportsSecureCoding")
+    public static native boolean supportsSecureCoding();
     /*</properties>*/
     /*<members>*//*</members>*/
     /*<methods>*/
-    
+    @Method(selector = "encodeWithCoder:")
+    public native void encode(NSCoder coder);
+    @Method(selector = "initWithCoder:")
+    protected native @Pointer long init(NSCoder decoder);
     /*</methods>*/
 }

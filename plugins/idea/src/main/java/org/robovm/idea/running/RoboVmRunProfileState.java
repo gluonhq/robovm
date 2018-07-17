@@ -96,12 +96,24 @@ public class RoboVmRunProfileState extends CommandLineState {
         } else {
             if(launchParameters instanceof IOSSimulatorLaunchParameters) {
                 IOSSimulatorLaunchParameters simParams = (IOSSimulatorLaunchParameters)launchParameters;
+                // finding exact simulator to run at
+                DeviceType exactType = null;
+                DeviceType bestType = null;
+                int bestTypeVersion = -1;
                 for(DeviceType type: DeviceType.listDeviceTypes()) {
-                    if (type.getDeviceName().equals(runConfig.getSimulatorName())) {
-                        simParams.setDeviceType(type);
+                    if (type.getDeviceName().equals(runConfig.getSimulatorName()) && type.getSdk().getVersionCode() == runConfig.getSimulatorSdk()) {
+                        exactType = type;
                         break;
+                    } else if (type.getDeviceName().equals(runConfig.getSimulatorName()) && type.getSdk().getVersionCode() > bestTypeVersion) {
+                        bestType = type;
+                        bestTypeVersion = type.getSdk().getVersionCode();
                     }
                 }
+                if (exactType == null)
+                    exactType = bestType;
+                if (exactType != null)
+                    simParams.setDeviceType(exactType);
+                // else FIXME: it is not covered, shall exception be thrown here ???
             }
         }
     }
@@ -115,11 +127,11 @@ public class RoboVmRunProfileState extends CommandLineState {
             } else if (getEnvironment().getExecutor().getId().equals(RoboVmRunner.DEBUG_EXECUTOR)) {
                 return executeRun();
             } else {
-                return null;
+                throw new ExecutionException("Unsupported executor " + getEnvironment().getExecutor().getId());
             }
         } catch(Throwable t) {
             RoboVmPlugin.logErrorThrowable(getEnvironment().getProject(), "Couldn't start application", t, true);
-            return null;
+            throw new ExecutionException(t);
         }
     }
 

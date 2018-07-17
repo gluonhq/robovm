@@ -1097,6 +1097,16 @@ import org.robovm.apple.dispatch.*;
         /**
          * @since Available in iOS 2.0 and later.
          */
+        @GlobalValue(symbol="kSecAttrIsSensitive", optional=true)
+        public static native CFType IsSensitive();
+        /**
+         * @since Available in iOS 2.0 and later.
+         */
+        @GlobalValue(symbol="kSecAttrIsExtractable", optional=true)
+        public static native CFType IsExtractable();
+        /**
+         * @since Available in iOS 2.0 and later.
+         */
         @GlobalValue(symbol="kSecAttrApplicationTag", optional=true)
         public static native CFType ApplicationTag();
         /**
@@ -1159,6 +1169,16 @@ import org.robovm.apple.dispatch.*;
          */
         @GlobalValue(symbol="kSecAttrTokenID", optional=true)
         public static native CFType TokenID();
+        /**
+         * @since Available in iOS 11.0 and later.
+         */
+        @GlobalValue(symbol="kSecAttrPersistantReference", optional=true)
+        public static native CFType PersistantReference();
+        /**
+         * @since Available in iOS 11.0 and later.
+         */
+        @GlobalValue(symbol="kSecAttrPersistentReference", optional=true)
+        public static native CFType PersistentReference();
         /**
          * @since Available in iOS 2.0 and later.
          */

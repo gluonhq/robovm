@@ -50,6 +50,8 @@ import org.robovm.apple.coregraphics.*;
     protected MDLObject(SkipInit skipInit) { super(skipInit); }
     /*</constructors>*/
     /*<properties>*/
+    @Property(selector = "components")
+    public native NSArray<?> getComponents();
     @Property(selector = "parent")
     public native MDLObject getParent();
     @Property(selector = "setParent:", strongRef = true)
@@ -83,8 +85,15 @@ import org.robovm.apple.coregraphics.*;
     public native void setComponent(MDLComponent component, ObjCProtocol protocol);
     @Method(selector = "componentConformingToProtocol:")
     public native MDLComponent getComponent(ObjCProtocol protocol);
+    @Method(selector = "objectForKeyedSubscript:")
+    public native MDLComponent objectForKeyedSubscript(ObjCProtocol key);
+    @Method(selector = "setObject:forKeyedSubscript:")
+    public native void setObjectForKeyedSubscript(MDLComponent obj, ObjCProtocol key);
     @Method(selector = "objectAtPath:")
     public native MDLObject objectAtPath(String path);
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
     @Method(selector = "enumerateChildObjectsOfClass:root:usingBlock:stopPointer:")
     public native void enumerateChildObjects(Class<?> objectClass, MDLObject root, @Block VoidBlock2<MDLObject, BooleanPtr> block, BooleanPtr stopPointer);
     @Method(selector = "addChild:")

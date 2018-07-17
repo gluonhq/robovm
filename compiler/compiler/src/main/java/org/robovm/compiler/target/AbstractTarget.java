@@ -39,10 +39,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import com.dd.plist.NSDictionary;
+import com.dd.plist.PropertyListParser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.robovm.compiler.clazz.Path;
+import org.robovm.compiler.config.AppExtension;
 import org.robovm.compiler.config.Arch;
 import org.robovm.compiler.config.Config;
 import org.robovm.compiler.config.OS;
@@ -62,15 +65,19 @@ public abstract class AbstractTarget implements Target {
 
     protected AbstractTarget() {
     }
-    
+
     @Override
     public void init(Config config) {
         this.config = config;
     }
-    
+
     @Override
     public boolean canLaunch() {
         return true;
+    }
+
+    @Override
+    public void prepareLaunch() throws IOException {
     }
 
     @Override
@@ -85,15 +92,15 @@ public abstract class AbstractTarget implements Target {
         }
         return "lib" + File.separator + name;
     }
-    
+
     public boolean canLaunchInPlace() {
         return true;
     }
-    
+
     protected List<String> getTargetExportedSymbols() {
         return Collections.emptyList();
     }
-    
+
     protected List<String> getTargetCcArgs() {
         return Collections.emptyList();
     }
@@ -104,23 +111,23 @@ public abstract class AbstractTarget implements Target {
 
     public void build(List<File> objectFiles) throws IOException {
         File outFile = new File(config.getTmpDir(), config.getExecutableName());
-        
+
         config.getLogger().info("Building %s binary %s", config.getTarget().getType(), outFile);
-        
+
         LinkedList<String> ccArgs = new LinkedList<String>();
         LinkedList<String> libs = new LinkedList<String>();
-        
+
         ccArgs.addAll(getTargetCcArgs());
         libs.addAll(getTargetLibs());
-        
+
         String libSuffix = config.isUseDebugLibs() ? "-dbg" : "";
-        
-        libs.add("-lrobovm-bc" + libSuffix); 
+
+        libs.add("-lrobovm-bc" + libSuffix);
         if (config.getOs().getFamily() == OS.Family.darwin) {
             libs.add("-force_load");
             libs.add(new File(config.getOsArchDepLibDir(), "librobovm-rt" + libSuffix + ".a").getAbsolutePath());
         } else {
-            libs.addAll(Arrays.asList("-Wl,--whole-archive", "-lrobovm-rt" + libSuffix, "-Wl,--no-whole-archive"));            
+            libs.addAll(Arrays.asList("-Wl,--whole-archive", "-lrobovm-rt" + libSuffix, "-Wl,--no-whole-archive"));
         }
         if (config.isSkipInstall()) {
             libs.add("-lrobovm-debug" + libSuffix);
@@ -136,7 +143,7 @@ public abstract class AbstractTarget implements Target {
             libs.add("-framework");
             libs.add("Foundation");
         }
-        
+
         ccArgs.add("-L");
         ccArgs.add(config.getOsArchDepLibDir().getAbsolutePath());
 
@@ -197,7 +204,7 @@ public abstract class AbstractTarget implements Target {
             ccArgs.add("-Wl,-no_implicit_dylibs");
             ccArgs.add("-Wl,-dead_strip");
         }
-        
+
         if (config.getOs().getFamily() == OS.Family.darwin && !config.getFrameworks().isEmpty()) {
             for (String p : config.getFrameworks()) {
                 libs.add("-framework");
@@ -215,7 +222,7 @@ public abstract class AbstractTarget implements Target {
                 ccArgs.add("-F" + p.getAbsolutePath());
             }
         }
-        
+
         if (!config.getLibs().isEmpty()) {
             objectFiles = new ArrayList<File>(objectFiles);
             for (Config.Lib lib : config.getLibs()) {
@@ -233,7 +240,7 @@ public abstract class AbstractTarget implements Target {
                         if (lib.isForce()) {
                             libs.add("-Wl,--whole-archive");
                         }
-                        libs.add(new File(p).getAbsolutePath());            
+                        libs.add(new File(p).getAbsolutePath());
                         if (lib.isForce()) {
                             libs.add("-Wl,--no-whole-archive");
                         }
@@ -246,7 +253,7 @@ public abstract class AbstractTarget implements Target {
                 }
             }
         }
-     
+
         ccArgs.add("-fPIC");
         if (config.getOs() == OS.macosx) {
             if (!config.getFrameworks().contains("CoreServices")) {
@@ -259,18 +266,22 @@ public abstract class AbstractTarget implements Target {
                 libs.add("MobileCoreServices");
             }
         }
-        
+
         doBuild(outFile, ccArgs, objectFiles, libs);
     }
-    
-    protected void doBuild(File outFile, List<String> ccArgs, List<File> objectFiles, 
+
+    protected void doBuild(File outFile, List<String> ccArgs, List<File> objectFiles,
             List<String> libs) throws IOException {
-        
-        ToolchainUtil.link(config, ccArgs, objectFiles, libs, outFile);        
+
+        ToolchainUtil.link(config, ccArgs, objectFiles, libs, outFile);
     }
 
     protected String getExecutable() {
         return config.getExecutableName();
+    }
+
+    protected String getBundleId() {
+        return config.getMainClass() != null ? config.getMainClass() : config.getExecutableName();
     }
 
     @Override
@@ -299,17 +310,17 @@ public abstract class AbstractTarget implements Target {
                 @Override
                 public void processFile(Resource resource, File file, File destDir)
                         throws IOException {
-                    
+
                     copyFile(resource, file, destDir);
                 }
             }, destDir);
         }
     }
-    
+
     protected void copyDynamicFrameworks(File destDir) throws IOException {
         final Set<String> swiftLibraries = new HashSet<>();
         File frameworksDir = new File(destDir, "Frameworks");
-        
+
         for (String framework : config.getFrameworks()) {
             boolean isCustomFramework = false;
             File frameworkDir = null;
@@ -320,7 +331,7 @@ public abstract class AbstractTarget implements Target {
                     break;
                 }
             }
-                        
+
             if (isCustomFramework) {
                 // check if this is a dynamic framework by finding
                 // at least ony dylib in the root folder
@@ -331,8 +342,8 @@ public abstract class AbstractTarget implements Target {
                         break;
                     }
                 }
-                
-                if(isDynamicFramework) {                    
+
+                if(isDynamicFramework) {
                     config.getLogger().info("Copying framework %s from %s to %s", framework, frameworkDir, destDir);
                     new Resource(frameworkDir).walk(new Walker() {
                         @Override
@@ -341,32 +352,35 @@ public abstract class AbstractTarget implements Target {
                                     || dir.getName().equals("Modules") || dir.getName().equals("Versions") || dir.getName()
                                     .equals("Documentation"));
                         }
-    
+
                         @Override
                         public void processFile(Resource resource, File file, File destDir) throws IOException {
                             if (!isStaticLibrary(file)) {
                                 copyFile(resource, file, destDir);
-    
-                                if (isDynamicLibrary(file)) {                                                                        
+
+                                if (isDynamicLibrary(file)) {
                                     // remove simulator archs for device builds
                                     if (config.getOs() == OS.ios && config.getArch().isArm()) {
                                         String archs = ToolchainUtil.lipoInfo(config, file);
-                                        File inFile = new File(destDir, file.getName());
-                                        File tmpFile = new File(destDir, file.getName() + ".tmp");
-                                        FileUtils.copyFile(inFile, tmpFile);
-                                        if(archs.contains(Arch.x86.getClangName())) { 
-                                            ToolchainUtil.lipoRemoveArchs(config, inFile, tmpFile, Arch.x86);
+                                        List<Arch> archesToRemove = new ArrayList<>();
+                                        if(archs.contains(Arch.x86.getClangName())) {
+                                            archesToRemove.add(Arch.x86);
                                         }
-                                        if(archs.contains(Arch.x86_64.getClangName())) { 
-                                            ToolchainUtil.lipoRemoveArchs(config, inFile, tmpFile, Arch.x86_64);
+                                        if(archs.contains(Arch.x86_64.getClangName())) {
+                                            archesToRemove.add(Arch.x86_64);
                                         }
-                                        FileUtils.copyFile(tmpFile, inFile);
-                                        tmpFile.delete();
+                                        if (!archesToRemove.isEmpty()) {
+                                            File inFile = new File(destDir, file.getName());
+                                            File tmpFile = new File(destDir, file.getName() + ".tmp");
+                                            ToolchainUtil.lipoRemoveArchs(config, inFile, tmpFile, archesToRemove.toArray(new Arch[archesToRemove.size()]));
+                                            FileUtils.copyFile(tmpFile, inFile);
+                                            tmpFile.delete();
+                                        }
                                     }
-    
+
                                     // check if this dylib depends on Swift
                                     // and register those libraries to be copied
-                                    // to bundle.app/Frameworks                                  
+                                    // to bundle.app/Frameworks
                                     String dependencies = ToolchainUtil.otool(file);
                                     Pattern swiftLibraryPattern = Pattern.compile("libswift.+\\.dylib");
                                     Matcher matcher = swiftLibraryPattern.matcher(dependencies);
@@ -377,7 +391,7 @@ public abstract class AbstractTarget implements Target {
                                 }
                             }
                         }
-    
+
                     }, frameworksDir);
                 }
             }
@@ -386,6 +400,73 @@ public abstract class AbstractTarget implements Target {
         // copy Swift libraries if required
         if (!swiftLibraries.isEmpty()) {
             copySwiftLibs(swiftLibraries, frameworksDir);
+        }
+    }
+
+    protected void copyAppExtensions(File destDir) throws IOException {
+        File pluginsDir = new File(destDir, "PlugIns");
+
+        for (AppExtension extensionVo : config.getAppExtensions()) {
+            String extension = extensionVo.getName();
+            File extensionDir = null;
+            for (File path : config.getAppExtensionPaths()) {
+                File extPath = new File(path, extension + ".appex");
+                if (extPath.exists() && extPath.isDirectory()) {
+                    extensionDir = extPath;
+                    break;
+                }
+            }
+
+            if (extensionDir == null)
+                continue;
+
+            config.getLogger().info("Copying app-extension %s from %s to %s", extension, extensionDir, pluginsDir);
+            new Resource(extensionDir).walk(new Walker() {
+                @Override
+                public boolean processDir(Resource resource, File dir, File destDir) throws IOException {
+                    return true;
+                }
+
+                @Override
+                public void processFile(Resource resource, File file, File destDir) throws IOException {
+                    copyFile(resource, file, destDir);
+
+                    if (config.getOs() == OS.ios && config.getArch().isArm()) {
+                        // remove simulator archs for device builds
+                        if (isAppExtension(file)) {
+                            String archs = ToolchainUtil.lipoInfo(config, file);
+                            List<Arch> archesToRemove = new ArrayList<>();
+                            if (archs.contains(Arch.x86.getClangName())) {
+                                archesToRemove.add(Arch.x86);
+                            }
+                            if (archs.contains(Arch.x86_64.getClangName())) {
+                                archesToRemove.add(Arch.x86_64);
+                            }
+                            if (!archesToRemove.isEmpty()) {
+                                File inFile = new File(destDir, file.getName());
+                                File tmpFile = new File(destDir, file.getName() + ".tmp");
+                                ToolchainUtil.lipoRemoveArchs(config, inFile, tmpFile, archesToRemove.toArray(new Arch[archesToRemove.size()]));
+                                FileUtils.copyFile(tmpFile, inFile);
+                                tmpFile.delete();
+                            }
+                        }
+                    }
+                }
+            }, pluginsDir);
+
+            // app extension shell extend app id, e.g. if app id = com.sample.app
+            // all app extensions shall have "com.sample.app." as prefix.
+            // just override all app extension ids by adding extension name to app id
+            // read app ext info.plist
+            try {
+                File infoPlistFile = new File(pluginsDir, extension + ".appex/Info.plist");
+                NSDictionary infoPlist = (NSDictionary) PropertyListParser.parse(infoPlistFile);
+                String appExBundleId = getBundleId() + "." + extension;
+                infoPlist.put("CFBundleIdentifier", appExBundleId);
+                PropertyListParser.saveAsXML(infoPlist, infoPlistFile);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to read/update bundle id of extension " + extension);
+            }
         }
     }
 
@@ -402,7 +483,31 @@ public abstract class AbstractTarget implements Target {
 		}
 		File swiftDir = new File(ToolchainUtil.findXcodePath(),
 				"Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/" + system);
-		for (String library : swiftLibraries) {
+
+		// dkimitsa: there is hidden dependencies possible between swift libraries.
+		// e.g. one swiftLib has dependency that is not listed in included framework
+		// solve this by moving through all swiftLibs and resolve their not listed dependencies
+		Set<String> libsToResolve = new HashSet<>(swiftLibraries);
+		Set<String> extendedSwiftLibraries = new HashSet<>(swiftLibraries);
+		while (!libsToResolve.isEmpty()) {
+			for (String library : new HashSet<>(libsToResolve)) {
+				libsToResolve.remove(library);
+
+				File swiftLibrary = new File(swiftDir, library);
+				String dependencies = ToolchainUtil.otool(swiftLibrary);
+				Pattern swiftLibraryPattern = Pattern.compile("libswift.+\\.dylib");
+				Matcher matcher = swiftLibraryPattern.matcher(dependencies);
+				while (matcher.find()) {
+					String lib = dependencies.substring(matcher.start(), matcher.end());
+					if (extendedSwiftLibraries.add(lib)) {
+						// new dependency, add it heere
+						libsToResolve.add(lib);
+					}
+				}
+			}
+		}
+
+		for (String library : extendedSwiftLibraries) {
 			config.getLogger().info("Copying swift lib %s from %s to %s", library, swiftDir, targetDir);
 			File swiftLibrary = new File(swiftDir, library);
 			FileUtils.copyFileToDirectory(swiftLibrary, targetDir);
@@ -410,13 +515,18 @@ public abstract class AbstractTarget implements Target {
 	}
 
     protected boolean isDynamicLibrary(File file) throws IOException {
-        String result = ToolchainUtil.file(file);        
+        String result = ToolchainUtil.file(file);
         return result.contains("shared library");
     }
 
     protected boolean isStaticLibrary(File file) throws IOException {
-        String result = ToolchainUtil.file(file);        
+        String result = ToolchainUtil.file(file);
         return result.contains("ar archive");
+    }
+
+    protected boolean isAppExtension(File file) throws IOException {
+        String result = ToolchainUtil.file(file);
+        return result.contains("Mach-O 64-bit executable") || result.contains("Mach-O executable");
     }
 
     protected boolean processDir(Resource resource, File dir, File destDir) throws IOException {
@@ -427,7 +537,7 @@ public abstract class AbstractTarget implements Target {
         config.getLogger().info("Copying resource %s to %s", file, destDir);
         FileUtils.copyFileToDirectory(file, destDir, true);
     }
-    
+
     public void install() throws IOException {
         config.getLogger().info("Installing %s binary to %s", config.getTarget().getType(), config.getInstallDir());
         config.getInstallDir().mkdirs();
@@ -458,13 +568,14 @@ public abstract class AbstractTarget implements Target {
         stripArchives(installDir);
         copyResources(resourcesDir);
         copyDynamicFrameworks(installDir);
+        copyAppExtensions(installDir);
     }
 
     public Process launch(LaunchParameters launchParameters) throws IOException {
         if (config.isSkipLinking()) {
             throw new IllegalStateException("Cannot skip linking if target should be run");
         }
-        
+
         // Add -rvm:log=warn to command line arguments if no logging level has been set explicitly
         boolean add = true;
         for (String arg : launchParameters.getArguments()) {
@@ -479,26 +590,26 @@ public abstract class AbstractTarget implements Target {
             launchParameters.setArguments(args);
         }
 
-        Map<String, String> env = new HashMap<>(launchParameters.getEnvironment() != null 
+        Map<String, String> env = new HashMap<>(launchParameters.getEnvironment() != null
                 ? launchParameters.getEnvironment() : Collections.<String, String>emptyMap());
         env.put("ROBOVM_LAUNCH_MODE", config.isDebug() ? "debug" : "release");
         launchParameters.setEnvironment(env);
-        
+
         return doLaunch(launchParameters);
     }
-    
+
     protected Process doLaunch(LaunchParameters launchParameters) throws IOException {
         return createLauncher(launchParameters).execAsync();
     }
-    
+
     protected Launcher createLauncher(LaunchParameters launchParameters) throws IOException {
         throw new UnsupportedOperationException();
     }
-    
+
     protected Target build(Config config) {
         return this;
     }
-    
+
     protected void stripArchives(File installDir) throws IOException {
         List<Path> allPaths = new ArrayList<Path>();
         allPaths.addAll(config.getClazzes().getPaths());
@@ -511,15 +622,15 @@ public abstract class AbstractTarget implements Target {
             stripArchive(path, destJar);
         }
     }
-    
+
     protected void stripArchive(Path path, File output) throws IOException {
-        
+
         if (!config.isClean() && output.exists() && !path.hasChangedSince(output.lastModified())) {
-            config.getLogger().info("Not creating stripped archive file %s for unchanged path %s", 
+            config.getLogger().info("Not creating stripped archive file %s for unchanged path %s",
                     output, path.getFile());
             return;
         }
-        
+
         config.getLogger().info("Creating stripped archive file %s", output);
 
         ZipOutputStream out = null;

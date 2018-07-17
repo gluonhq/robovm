@@ -28,6 +28,9 @@ import org.robovm.rt.bro.*;
 import org.robovm.rt.bro.annotation.*;
 import org.robovm.rt.bro.ptr.*;
 import org.robovm.apple.foundation.*;
+import org.robovm.apple.spritekit.*;
+import org.robovm.apple.scenekit.*;
+import org.robovm.apple.uikit.*;
 /*</imports>*/
 
 /*<javadoc>*/
@@ -38,7 +41,7 @@ import org.robovm.apple.foundation.*;
 /*<annotations>*/@Library("GameplayKit") @NativeClass/*</annotations>*/
 /*<visibility>*/public/*</visibility>*/ class /*<name>*/GKMinmaxStrategist/*</name>*/ 
     extends /*<extends>*/NSObject/*</extends>*/ 
-    /*<implements>*//*</implements>*/ {
+    /*<implements>*/implements GKStrategist/*</implements>*/ {
 
     /*<ptr>*/public static class GKMinmaxStrategistPtr extends Ptr<GKMinmaxStrategist, GKMinmaxStrategistPtr> {}/*</ptr>*/
     /*<bind>*/static { ObjCRuntime.bind(GKMinmaxStrategist.class); }/*</bind>*/
@@ -53,6 +56,14 @@ import org.robovm.apple.foundation.*;
     public native @MachineSizedSInt long getMaxLookAheadDepth();
     @Property(selector = "setMaxLookAheadDepth:")
     public native void setMaxLookAheadDepth(@MachineSizedSInt long v);
+    @Property(selector = "gameModel")
+    public native GKGameModel getGameModel();
+    @Property(selector = "setGameModel:")
+    public native void setGameModel(GKGameModel v);
+    @Property(selector = "randomSource")
+    public native GKRandom getRandomSource();
+    @Property(selector = "setRandomSource:")
+    public native void setRandomSource(GKRandom v);
     /*</properties>*/
     /*<members>*//*</members>*/
     /*<methods>*/
@@ -60,5 +71,7 @@ import org.robovm.apple.foundation.*;
     public native GKGameModelUpdate getBestMoveForPlayer(GKGameModelPlayer player);
     @Method(selector = "randomMoveForPlayer:fromNumberOfBestMoves:")
     public native GKGameModelUpdate getRandomMoveForPlayer(GKGameModelPlayer player, @MachineSizedSInt long numMovesToConsider);
+    @Method(selector = "bestMoveForActivePlayer")
+    public native GKGameModelUpdate bestMoveForActivePlayer();
     /*</methods>*/
 }

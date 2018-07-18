@@ -89,6 +89,22 @@ import org.robovm.apple.coregraphics.*;
     protected MPMusicPlayerController(SkipInit skipInit) { super(skipInit); }
     /*</constructors>*/
     /*<properties>*/
+    @Property(selector = "applicationMusicPlayer")
+    public static native MPMusicPlayerController getApplicationMusicPlayer();
+    /**
+     * @since Available in iOS 10.3 and later.
+     */
+    @Property(selector = "applicationQueuePlayer")
+    public static native MPMusicPlayerApplicationController getApplicationQueuePlayer();
+    @Property(selector = "systemMusicPlayer")
+    public static native MPMusicPlayerController getSystemMusicPlayer();
+    /**
+     * @since Available in iOS 3.0 and later.
+     * @deprecated Deprecated in iOS 8.0.
+     */
+    @Deprecated
+    @Property(selector = "iPodMusicPlayer")
+    public static native MPMusicPlayerController getIPodMusicPlayer();
     @Property(selector = "playbackState")
     public native MPMusicPlaybackState getPlaybackState();
     @Property(selector = "repeatMode")
@@ -148,18 +164,9 @@ import org.robovm.apple.coregraphics.*;
     public static native NSString NowPlayingItemDidChangeNotification();
     @GlobalValue(symbol="MPMusicPlayerControllerVolumeDidChangeNotification", optional=true)
     public static native NSString VolumeDidChangeNotification();
+    @GlobalValue(symbol="MPMusicPlayerControllerQueueDidChangeNotification", optional=true)
+    public static native NSString QueueDidChangeNotification();
     
-    @Method(selector = "applicationMusicPlayer")
-    public static native MPMusicPlayerController getApplicationMusicPlayer();
-    @Method(selector = "systemMusicPlayer")
-    public static native MPMusicPlayerController getSystemMusicPlayer();
-    /**
-     * @since Available in iOS 3.0 and later.
-     * @deprecated Deprecated in iOS 8.0.
-     */
-    @Deprecated
-    @Method(selector = "iPodMusicPlayer")
-    public static native MPMusicPlayerController getIPodMusicPlayer();
     @Method(selector = "setQueueWithQuery:")
     public native void setQueue(MPMediaQuery query);
     @Method(selector = "setQueueWithItemCollection:")
@@ -168,7 +175,27 @@ import org.robovm.apple.coregraphics.*;
      * @since Available in iOS 9.3 and later.
      */
     @Method(selector = "setQueueWithStoreIDs:")
-    public native void setQueueWithStoreIDs(NSArray<?> storeIDs);
+    public native void setQueueWithStoreIDs(NSArray<NSString> storeIDs);
+    /**
+     * @since Available in iOS 10.1 and later.
+     */
+    @Method(selector = "setQueueWithDescriptor:")
+    public native void setQueueWithDescriptor(MPMusicPlayerQueueDescriptor descriptor);
+    /**
+     * @since Available in iOS 10.3 and later.
+     */
+    @Method(selector = "prependQueueDescriptor:")
+    public native void prependQueueDescriptor(MPMusicPlayerQueueDescriptor descriptor);
+    /**
+     * @since Available in iOS 10.3 and later.
+     */
+    @Method(selector = "appendQueueDescriptor:")
+    public native void appendQueueDescriptor(MPMusicPlayerQueueDescriptor descriptor);
+    /**
+     * @since Available in iOS 10.1 and later.
+     */
+    @Method(selector = "prepareToPlayWithCompletionHandler:")
+    public native void prepareToPlayWithCompletionHandler(@Block VoidBlock1<NSError> completionHandler);
     @Method(selector = "skipToNextItem")
     public native void skipToNextItem();
     @Method(selector = "skipToBeginning")

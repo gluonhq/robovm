@@ -33,12 +33,13 @@ public class SigningIdentity implements Comparable<SigningIdentity> {
 
     private final String name;
     private final String fingerprint;
-    
+    public static final SigningIdentity ADHOC = new SigningIdentity("ad-hoc (simulator only)", "-");
+
     SigningIdentity(String name, String fingerprint) {
         this.name = name;
         this.fingerprint = fingerprint;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -59,16 +60,21 @@ public class SigningIdentity implements Comparable<SigningIdentity> {
     }
 
     public static SigningIdentity find(List<SigningIdentity> ids, String search) {
+        return find(ids, search, null);
+    }
+
+    public static SigningIdentity find(List<SigningIdentity> ids, String search, ProvisioningProfile profile) {
         if (search.startsWith("/") && search.endsWith("/")) {
             Pattern pattern = Pattern.compile(search.substring(1, search.length() - 1));
             for (SigningIdentity id : ids) {
-                if (pattern.matcher(id.name).find()) {
+                if (pattern.matcher(id.name).find() && (profile  == null || profile.getCertFingerprints().contains(id.getFingerprint()))) {
                     return id;
                 }
             }
         } else {
             for (SigningIdentity id : ids) {
-                if (id.name.startsWith(search) || id.fingerprint.equals(search.toUpperCase())) {
+                if ((id.name.startsWith(search) || id.fingerprint.equals(search.toUpperCase())) &&
+                        (profile  == null || profile.getCertFingerprints().contains(id.getFingerprint()))) {
                     return id;
                 }
             }
@@ -113,7 +119,31 @@ public class SigningIdentity implements Comparable<SigningIdentity> {
             throw new RuntimeException(e);
         }
     }
-    
+
+    /**
+     * @return list of identities with filter applied
+     */
+    public static List<SigningIdentity> list(String search) {
+        List<SigningIdentity> unfiltered = list();
+        List<SigningIdentity> filtered = new ArrayList<>();
+        if (search.startsWith("/") && search.endsWith("/")) {
+            Pattern pattern = Pattern.compile(search.substring(1, search.length() - 1));
+            for (SigningIdentity id : unfiltered) {
+                if (pattern.matcher(id.name).find()) {
+                    filtered.add(id);
+                }
+            }
+        } else {
+            for (SigningIdentity id : unfiltered) {
+                if ((id.name.startsWith(search) || id.fingerprint.equals(search.toUpperCase()))) {
+                    filtered.add(id);
+                }
+            }
+        }
+
+        return filtered;
+    }
+
     public static void main(String[] args) {
         if (args.length == 0) {
             System.out.println(list());

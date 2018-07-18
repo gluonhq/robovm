@@ -89,6 +89,11 @@ import org.robovm.apple.coregraphics.*;
     @Bridge(symbol="CGImageDestinationAddImageFromSource", optional=true)
     public native void addImageFromSource(CGImageSource isrc, @MachineSizedUInt long index, CGImageDestinationProperties properties);
     /**
+     * @since Available in iOS 4.0 and later.
+     */
+    @Bridge(symbol="CGImageDestinationFinalize", optional=true)
+    public native boolean finalizeDestination();
+    /**
      * @since Available in iOS 7.0 and later.
      */
     @Bridge(symbol="CGImageDestinationAddImageAndMetadata", optional=true)
@@ -107,5 +112,10 @@ import org.robovm.apple.coregraphics.*;
      */
     @Bridge(symbol="CGImageDestinationCopyImageSource", optional=true)
     private native boolean copyImageSource(CGImageSource isrc, CGImageDestinationCopySourceOptions options, NSError.NSErrorPtr error);
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Bridge(symbol="CGImageDestinationAddAuxiliaryDataInfo", optional=true)
+    public native void addAuxiliaryDataInfo(String auxiliaryImageDataType, NSDictionary auxiliaryDataInfoDictionary);
     /*</methods>*/
 }

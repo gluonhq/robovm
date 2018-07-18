@@ -46,6 +46,11 @@ import org.robovm.apple.coregraphics.*;
     /*</bind>*/
     /*<constants>*//*</constants>*/
     /*<properties>*/
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Property(selector = "count")
+    @MachineSizedUInt long getCount();
     @Property(selector = "objects")
     NSArray<MDLObject> getObjects();
     /*</properties>*/
@@ -54,6 +59,11 @@ import org.robovm.apple.coregraphics.*;
     void addObject(MDLObject object);
     @Method(selector = "removeObject:")
     void removeObject(MDLObject object);
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Method(selector = "objectAtIndexedSubscript:")
+    MDLObject objectAtIndexedSubscript(@MachineSizedUInt long index);
     /*</methods>*/
     /*<adapter>*/
     /*</adapter>*/

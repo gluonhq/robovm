@@ -28,6 +28,7 @@ import org.robovm.rt.bro.*;
 import org.robovm.rt.bro.annotation.*;
 import org.robovm.rt.bro.ptr.*;
 import org.robovm.apple.foundation.*;
+import org.robovm.apple.security.*;
 /*</imports>*/
 
 /*<javadoc>*/
@@ -38,7 +39,7 @@ import org.robovm.apple.foundation.*;
 /*<annotations>*/@Library("NetworkExtension") @NativeClass/*</annotations>*/
 /*<visibility>*/public/*</visibility>*/ class /*<name>*/NEFilterProviderConfiguration/*</name>*/ 
     extends /*<extends>*/NSObject/*</extends>*/ 
-    /*<implements>*//*</implements>*/ {
+    /*<implements>*/implements NSSecureCoding/*</implements>*/ {
 
     /*<ptr>*/public static class NEFilterProviderConfigurationPtr extends Ptr<NEFilterProviderConfiguration, NEFilterProviderConfigurationPtr> {}/*</ptr>*/
     /*<bind>*/static { ObjCRuntime.bind(NEFilterProviderConfiguration.class); }/*</bind>*/
@@ -47,6 +48,8 @@ import org.robovm.apple.foundation.*;
     public NEFilterProviderConfiguration() {}
     protected NEFilterProviderConfiguration(Handle h, long handle) { super(h, handle); }
     protected NEFilterProviderConfiguration(SkipInit skipInit) { super(skipInit); }
+    @Method(selector = "initWithCoder:")
+    public NEFilterProviderConfiguration(NSCoder decoder) { super((SkipInit) null); initObject(init(decoder)); }
     /*</constructors>*/
     /*<properties>*/
     /**
@@ -73,12 +76,12 @@ import org.robovm.apple.foundation.*;
      * @since Available in iOS 9.0 and later.
      */
     @Property(selector = "vendorConfiguration")
-    public native NSDictionary<?, ?> getVendorConfiguration();
+    public native NSDictionary<NSString, ?> getVendorConfiguration();
     /**
      * @since Available in iOS 9.0 and later.
      */
     @Property(selector = "setVendorConfiguration:")
-    public native void setVendorConfiguration(NSDictionary<?, ?> v);
+    public native void setVendorConfiguration(NSDictionary<NSString, ?> v);
     /**
      * @since Available in iOS 9.0 and later.
      */
@@ -129,9 +132,14 @@ import org.robovm.apple.foundation.*;
      */
     @Property(selector = "setIdentityReference:")
     public native void setIdentityReference(NSData v);
+    @Property(selector = "supportsSecureCoding")
+    public static native boolean supportsSecureCoding();
     /*</properties>*/
     /*<members>*//*</members>*/
     /*<methods>*/
-    
+    @Method(selector = "encodeWithCoder:")
+    public native void encode(NSCoder coder);
+    @Method(selector = "initWithCoder:")
+    protected native @Pointer long init(NSCoder decoder);
     /*</methods>*/
 }

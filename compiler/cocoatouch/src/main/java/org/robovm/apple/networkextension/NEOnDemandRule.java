@@ -28,6 +28,7 @@ import org.robovm.rt.bro.*;
 import org.robovm.rt.bro.annotation.*;
 import org.robovm.rt.bro.ptr.*;
 import org.robovm.apple.foundation.*;
+import org.robovm.apple.security.*;
 /*</imports>*/
 
 /*<javadoc>*/
@@ -38,7 +39,7 @@ import org.robovm.apple.foundation.*;
 /*<annotations>*/@Library("NetworkExtension") @NativeClass/*</annotations>*/
 /*<visibility>*/public/*</visibility>*/ class /*<name>*/NEOnDemandRule/*</name>*/ 
     extends /*<extends>*/NSObject/*</extends>*/ 
-    /*<implements>*//*</implements>*/ {
+    /*<implements>*/implements NSSecureCoding/*</implements>*/ {
 
     /*<ptr>*/public static class NEOnDemandRulePtr extends Ptr<NEOnDemandRule, NEOnDemandRulePtr> {}/*</ptr>*/
     /*<bind>*/static { ObjCRuntime.bind(NEOnDemandRule.class); }/*</bind>*/
@@ -47,6 +48,8 @@ import org.robovm.apple.foundation.*;
     public NEOnDemandRule() {}
     protected NEOnDemandRule(Handle h, long handle) { super(h, handle); }
     protected NEOnDemandRule(SkipInit skipInit) { super(skipInit); }
+    @Method(selector = "initWithCoder:")
+    public NEOnDemandRule(NSCoder decoder) { super((SkipInit) null); initObject(init(decoder)); }
     /*</constructors>*/
     /*<properties>*/
     /**
@@ -104,9 +107,14 @@ import org.robovm.apple.foundation.*;
      */
     @Property(selector = "setProbeURL:")
     public native void setProbeURL(NSURL v);
+    @Property(selector = "supportsSecureCoding")
+    public static native boolean supportsSecureCoding();
     /*</properties>*/
     /*<members>*//*</members>*/
     /*<methods>*/
-    
+    @Method(selector = "encodeWithCoder:")
+    public native void encode(NSCoder coder);
+    @Method(selector = "initWithCoder:")
+    protected native @Pointer long init(NSCoder decoder);
     /*</methods>*/
 }

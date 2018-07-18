@@ -28,6 +28,7 @@ import org.robovm.rt.bro.*;
 import org.robovm.rt.bro.annotation.*;
 import org.robovm.rt.bro.ptr.*;
 import org.robovm.apple.foundation.*;
+import org.robovm.apple.security.*;
 /*</imports>*/
 
 /*<javadoc>*/
@@ -38,7 +39,7 @@ import org.robovm.apple.foundation.*;
 /*<annotations>*/@Library("NetworkExtension") @NativeClass/*</annotations>*/
 /*<visibility>*/public/*</visibility>*/ class /*<name>*/NEAppRule/*</name>*/ 
     extends /*<extends>*/NSObject/*</extends>*/ 
-    /*<implements>*//*</implements>*/ {
+    /*<implements>*/implements NSSecureCoding/*</implements>*/ {
 
     /*<ptr>*/public static class NEAppRulePtr extends Ptr<NEAppRule, NEAppRulePtr> {}/*</ptr>*/
     /*<bind>*/static { ObjCRuntime.bind(NEAppRule.class); }/*</bind>*/
@@ -52,6 +53,8 @@ import org.robovm.apple.foundation.*;
      */
     @Method(selector = "initWithSigningIdentifier:")
     public NEAppRule(String signingIdentifier) { super((SkipInit) null); initObject(initWithSigningIdentifier(signingIdentifier)); }
+    @Method(selector = "initWithCoder:")
+    public NEAppRule(NSCoder decoder) { super((SkipInit) null); initObject(init(decoder)); }
     /*</constructors>*/
     /*<properties>*/
     /**
@@ -79,6 +82,8 @@ import org.robovm.apple.foundation.*;
      */
     @Property(selector = "setMatchDomains:")
     public native void setMatchDomains(NSArray<?> v);
+    @Property(selector = "supportsSecureCoding")
+    public static native boolean supportsSecureCoding();
     /*</properties>*/
     /*<members>*//*</members>*/
     /*<methods>*/
@@ -87,5 +92,9 @@ import org.robovm.apple.foundation.*;
      */
     @Method(selector = "initWithSigningIdentifier:")
     protected native @Pointer long initWithSigningIdentifier(String signingIdentifier);
+    @Method(selector = "encodeWithCoder:")
+    public native void encode(NSCoder coder);
+    @Method(selector = "initWithCoder:")
+    protected native @Pointer long init(NSCoder decoder);
     /*</methods>*/
 }

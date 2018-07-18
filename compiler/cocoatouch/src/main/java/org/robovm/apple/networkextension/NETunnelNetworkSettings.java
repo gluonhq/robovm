@@ -28,6 +28,7 @@ import org.robovm.rt.bro.*;
 import org.robovm.rt.bro.annotation.*;
 import org.robovm.rt.bro.ptr.*;
 import org.robovm.apple.foundation.*;
+import org.robovm.apple.security.*;
 /*</imports>*/
 
 /*<javadoc>*/
@@ -38,7 +39,7 @@ import org.robovm.apple.foundation.*;
 /*<annotations>*/@Library("NetworkExtension") @NativeClass/*</annotations>*/
 /*<visibility>*/public/*</visibility>*/ class /*<name>*/NETunnelNetworkSettings/*</name>*/ 
     extends /*<extends>*/NSObject/*</extends>*/ 
-    /*<implements>*//*</implements>*/ {
+    /*<implements>*/implements NSSecureCoding/*</implements>*/ {
 
     /*<ptr>*/public static class NETunnelNetworkSettingsPtr extends Ptr<NETunnelNetworkSettings, NETunnelNetworkSettingsPtr> {}/*</ptr>*/
     /*<bind>*/static { ObjCRuntime.bind(NETunnelNetworkSettings.class); }/*</bind>*/
@@ -52,6 +53,8 @@ import org.robovm.apple.foundation.*;
      */
     @Method(selector = "initWithTunnelRemoteAddress:")
     public NETunnelNetworkSettings(String address) { super((SkipInit) null); initObject(initWithTunnelRemoteAddress(address)); }
+    @Method(selector = "initWithCoder:")
+    public NETunnelNetworkSettings(NSCoder decoder) { super((SkipInit) null); initObject(init(decoder)); }
     /*</constructors>*/
     /*<properties>*/
     /**
@@ -79,6 +82,8 @@ import org.robovm.apple.foundation.*;
      */
     @Property(selector = "setProxySettings:")
     public native void setProxySettings(NEProxySettings v);
+    @Property(selector = "supportsSecureCoding")
+    public static native boolean supportsSecureCoding();
     /*</properties>*/
     /*<members>*//*</members>*/
     /*<methods>*/
@@ -87,5 +92,9 @@ import org.robovm.apple.foundation.*;
      */
     @Method(selector = "initWithTunnelRemoteAddress:")
     protected native @Pointer long initWithTunnelRemoteAddress(String address);
+    @Method(selector = "encodeWithCoder:")
+    public native void encode(NSCoder coder);
+    @Method(selector = "initWithCoder:")
+    protected native @Pointer long init(NSCoder decoder);
     /*</methods>*/
 }

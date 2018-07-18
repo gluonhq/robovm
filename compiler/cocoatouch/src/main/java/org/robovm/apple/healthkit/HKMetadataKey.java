@@ -100,6 +100,10 @@ import org.robovm.apple.foundation.*;
      */
     public static final HKMetadataKey HeartRateSensorLocation = new HKMetadataKey("HeartRateSensorLocation");
     /**
+     * @since Available in iOS 11.0 and later.
+     */
+    public static final HKMetadataKey HeartRateMotionContext = new HKMetadataKey("HeartRateMotionContext");
+    /**
      * @since Available in iOS 8.0 and later.
      */
     public static final HKMetadataKey FoodType = new HKMetadataKey("FoodType");
@@ -119,6 +123,14 @@ import org.robovm.apple.foundation.*;
      * @since Available in iOS 8.0 and later.
      */
     public static final HKMetadataKey ExternalUUID = new HKMetadataKey("ExternalUUID");
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    public static final HKMetadataKey SyncIdentifier = new HKMetadataKey("SyncIdentifier");
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    public static final HKMetadataKey SyncVersion = new HKMetadataKey("SyncVersion");
     /**
      * @since Available in iOS 8.0 and later.
      */
@@ -195,9 +207,41 @@ import org.robovm.apple.foundation.*;
      * @since Available in iOS 10.0 and later.
      */
     public static final HKMetadataKey SwimmingStrokeStyle = new HKMetadataKey("SwimmingStrokeStyle");
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    public static final HKMetadataKey InsulinDeliveryReason = new HKMetadataKey("InsulinDeliveryReason");
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    public static final HKMetadataKey BloodGlucoseMealTime = new HKMetadataKey("BloodGlucoseMealTime");
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    public static final HKMetadataKey VO2MaxTestType = new HKMetadataKey("VO2MaxTestType");
+    /**
+     * @since Available in iOS 11.2 and later.
+     */
+    public static final HKMetadataKey AverageSpeed = new HKMetadataKey("AverageSpeed");
+    /**
+     * @since Available in iOS 11.2 and later.
+     */
+    public static final HKMetadataKey MaximumSpeed = new HKMetadataKey("MaximumSpeed");
+    /**
+     * @since Available in iOS 11.2 and later.
+     */
+    public static final HKMetadataKey AlpineSlopeGrade = new HKMetadataKey("AlpineSlopeGrade");
+    /**
+     * @since Available in iOS 11.2 and later.
+     */
+    public static final HKMetadataKey ElevationAscended = new HKMetadataKey("ElevationAscended");
+    /**
+     * @since Available in iOS 11.2 and later.
+     */
+    public static final HKMetadataKey ElevationDescended = new HKMetadataKey("ElevationDescended");
     /*</constants>*/
     
-    private static /*<name>*/HKMetadataKey/*</name>*/[] values = new /*<name>*/HKMetadataKey/*</name>*/[] {/*<value_list>*/DeviceSerialNumber, BodyTemperatureSensorLocation, HeartRateSensorLocation, FoodType, UDIDeviceIdentifier, UDIProductionIdentifier, DigitalSignature, ExternalUUID, TimeZone, DeviceName, DeviceManufacturerName, WasTakenInLab, ReferenceRangeLowerLimit, ReferenceRangeUpperLimit, WasUserEntered, WorkoutBrandName, GroupFitness, IndoorWorkout, CoachedWorkout, WeatherCondition, WeatherTemperature, WeatherHumidity, SexualActivityProtectionUsed, MenstrualCycleStart, LapLength, SwimmingLocationType, SwimmingStrokeStyle/*</value_list>*/};
+    private static /*<name>*/HKMetadataKey/*</name>*/[] values = new /*<name>*/HKMetadataKey/*</name>*/[] {/*<value_list>*/DeviceSerialNumber, BodyTemperatureSensorLocation, HeartRateSensorLocation, HeartRateMotionContext, FoodType, UDIDeviceIdentifier, UDIProductionIdentifier, DigitalSignature, ExternalUUID, SyncIdentifier, SyncVersion, TimeZone, DeviceName, DeviceManufacturerName, WasTakenInLab, ReferenceRangeLowerLimit, ReferenceRangeUpperLimit, WasUserEntered, WorkoutBrandName, GroupFitness, IndoorWorkout, CoachedWorkout, WeatherCondition, WeatherTemperature, WeatherHumidity, SexualActivityProtectionUsed, MenstrualCycleStart, LapLength, SwimmingLocationType, SwimmingStrokeStyle, InsulinDeliveryReason, BloodGlucoseMealTime, VO2MaxTestType, AverageSpeed, MaximumSpeed, AlpineSlopeGrade, ElevationAscended, ElevationDescended/*</value_list>*/};
     
     /*<name>*/HKMetadataKey/*</name>*/ (String getterName) {
         super(Values.class, getterName);
@@ -236,6 +280,11 @@ import org.robovm.apple.foundation.*;
         @GlobalValue(symbol="HKMetadataKeyHeartRateSensorLocation", optional=true)
         public static native NSString HeartRateSensorLocation();
         /**
+         * @since Available in iOS 11.0 and later.
+         */
+        @GlobalValue(symbol="HKMetadataKeyHeartRateMotionContext", optional=true)
+        public static native NSString HeartRateMotionContext();
+        /**
          * @since Available in iOS 8.0 and later.
          */
         @GlobalValue(symbol="HKMetadataKeyFoodType", optional=true)
@@ -260,6 +309,16 @@ import org.robovm.apple.foundation.*;
          */
         @GlobalValue(symbol="HKMetadataKeyExternalUUID", optional=true)
         public static native NSString ExternalUUID();
+        /**
+         * @since Available in iOS 11.0 and later.
+         */
+        @GlobalValue(symbol="HKMetadataKeySyncIdentifier", optional=true)
+        public static native NSString SyncIdentifier();
+        /**
+         * @since Available in iOS 11.0 and later.
+         */
+        @GlobalValue(symbol="HKMetadataKeySyncVersion", optional=true)
+        public static native NSString SyncVersion();
         /**
          * @since Available in iOS 8.0 and later.
          */
@@ -355,6 +414,46 @@ import org.robovm.apple.foundation.*;
          */
         @GlobalValue(symbol="HKMetadataKeySwimmingStrokeStyle", optional=true)
         public static native NSString SwimmingStrokeStyle();
+        /**
+         * @since Available in iOS 11.0 and later.
+         */
+        @GlobalValue(symbol="HKMetadataKeyInsulinDeliveryReason", optional=true)
+        public static native NSString InsulinDeliveryReason();
+        /**
+         * @since Available in iOS 11.0 and later.
+         */
+        @GlobalValue(symbol="HKMetadataKeyBloodGlucoseMealTime", optional=true)
+        public static native NSString BloodGlucoseMealTime();
+        /**
+         * @since Available in iOS 11.0 and later.
+         */
+        @GlobalValue(symbol="HKMetadataKeyVO2MaxTestType", optional=true)
+        public static native NSString VO2MaxTestType();
+        /**
+         * @since Available in iOS 11.2 and later.
+         */
+        @GlobalValue(symbol="HKMetadataKeyAverageSpeed", optional=true)
+        public static native NSString AverageSpeed();
+        /**
+         * @since Available in iOS 11.2 and later.
+         */
+        @GlobalValue(symbol="HKMetadataKeyMaximumSpeed", optional=true)
+        public static native NSString MaximumSpeed();
+        /**
+         * @since Available in iOS 11.2 and later.
+         */
+        @GlobalValue(symbol="HKMetadataKeyAlpineSlopeGrade", optional=true)
+        public static native NSString AlpineSlopeGrade();
+        /**
+         * @since Available in iOS 11.2 and later.
+         */
+        @GlobalValue(symbol="HKMetadataKeyElevationAscended", optional=true)
+        public static native NSString ElevationAscended();
+        /**
+         * @since Available in iOS 11.2 and later.
+         */
+        @GlobalValue(symbol="HKMetadataKeyElevationDescended", optional=true)
+        public static native NSString ElevationDescended();
         /*</values>*/
     }
 }

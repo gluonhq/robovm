@@ -42,6 +42,10 @@ public enum /*<name>*/CNErrorCode/*</name>*/ implements NSErrorCode {
     CommunicationError(1L),
     DataAccessError(2L),
     AuthorizationDenied(100L),
+    /**
+     * @since Available in iOS 11.3 and later.
+     */
+    NoAccessableWritableContainers(101L),
     RecordDoesNotExist(200L),
     InsertedRecordAlreadyExists(201L),
     ContainmentCycle(202L),
@@ -51,7 +55,13 @@ public enum /*<name>*/CNErrorCode/*</name>*/ implements NSErrorCode {
     ValidationTypeMismatch(301L),
     ValidationConfigurationError(302L),
     PredicateInvalid(400L),
-    PolicyViolation(500L);
+    PolicyViolation(500L),
+    ClientIdentifierInvalid(600L),
+    ClientIdentifierDoesNotExist(601L),
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    VCardMalformed(700L);
     /*</values>*/
 
     /*<bind>*/

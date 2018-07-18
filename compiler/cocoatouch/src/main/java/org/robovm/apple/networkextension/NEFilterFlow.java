@@ -28,6 +28,7 @@ import org.robovm.rt.bro.*;
 import org.robovm.rt.bro.annotation.*;
 import org.robovm.rt.bro.ptr.*;
 import org.robovm.apple.foundation.*;
+import org.robovm.apple.security.*;
 /*</imports>*/
 
 /*<javadoc>*/
@@ -38,7 +39,7 @@ import org.robovm.apple.foundation.*;
 /*<annotations>*/@Library("NetworkExtension") @NativeClass/*</annotations>*/
 /*<visibility>*/public/*</visibility>*/ class /*<name>*/NEFilterFlow/*</name>*/ 
     extends /*<extends>*/NSObject/*</extends>*/ 
-    /*<implements>*//*</implements>*/ {
+    /*<implements>*/implements NSSecureCoding/*</implements>*/ {
 
     /*<ptr>*/public static class NEFilterFlowPtr extends Ptr<NEFilterFlow, NEFilterFlowPtr> {}/*</ptr>*/
     /*<bind>*/static { ObjCRuntime.bind(NEFilterFlow.class); }/*</bind>*/
@@ -47,6 +48,8 @@ import org.robovm.apple.foundation.*;
     public NEFilterFlow() {}
     protected NEFilterFlow(Handle h, long handle) { super(h, handle); }
     protected NEFilterFlow(SkipInit skipInit) { super(skipInit); }
+    @Method(selector = "initWithCoder:")
+    public NEFilterFlow(NSCoder decoder) { super((SkipInit) null); initObject(init(decoder)); }
     /*</constructors>*/
     /*<properties>*/
     /**
@@ -54,9 +57,29 @@ import org.robovm.apple.foundation.*;
      */
     @Property(selector = "URL")
     public native NSURL getURL();
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Property(selector = "sourceAppUniqueIdentifier")
+    public native NSData getSourceAppUniqueIdentifier();
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Property(selector = "sourceAppIdentifier")
+    public native String getSourceAppIdentifier();
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Property(selector = "sourceAppVersion")
+    public native String getSourceAppVersion();
+    @Property(selector = "supportsSecureCoding")
+    public static native boolean supportsSecureCoding();
     /*</properties>*/
     /*<members>*//*</members>*/
     /*<methods>*/
-    
+    @Method(selector = "encodeWithCoder:")
+    public native void encode(NSCoder coder);
+    @Method(selector = "initWithCoder:")
+    protected native @Pointer long init(NSCoder decoder);
     /*</methods>*/
 }

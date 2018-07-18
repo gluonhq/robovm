@@ -32,6 +32,7 @@ import org.robovm.apple.corefoundation.*;
 import org.robovm.apple.coregraphics.*;
 import org.robovm.apple.opengles.*;
 import org.robovm.apple.metal.*;
+import org.robovm.apple.iosurface.*;
 /*</imports>*/
 
 /*<javadoc>*/
@@ -83,6 +84,7 @@ public enum /*<name>*/CVPixelFormatType/*</name>*/ implements ValuedEnum {
     OneComponent8(1278226488L),
     TwoComponent8(843264056L),
     _30RGBLEPackedWideGamut(1999843442L),
+    ARGB2101010LEPacked(1815162994L),
     OneComponent16Half(1278226536L),
     OneComponent32Float(1278226534L),
     TwoComponent16Half(843264104L),
@@ -92,7 +94,17 @@ public enum /*<name>*/CVPixelFormatType/*</name>*/ implements ValuedEnum {
     _14Bayer_GRBG(1735549492L),
     _14Bayer_RGGB(1919379252L),
     _14Bayer_BGGR(1650943796L),
-    _14Bayer_GBRG(1734505012L);
+    _14Bayer_GBRG(1734505012L),
+    DisparityFloat16(1751411059L),
+    DisparityFloat32(1717856627L),
+    DepthFloat16(1751410032L),
+    DepthFloat32(1717855600L),
+    _420YpCbCr10BiPlanarVideoRange(2016686640L),
+    _422YpCbCr10BiPlanarVideoRange(2016686642L),
+    _444YpCbCr10BiPlanarVideoRange(2016687156L),
+    _420YpCbCr10BiPlanarFullRange(2019963440L),
+    _422YpCbCr10BiPlanarFullRange(2019963442L),
+    _444YpCbCr10BiPlanarFullRange(2019963956L);
     /*</values>*/
 
     public static class AsListMarshaler {

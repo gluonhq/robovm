@@ -277,7 +277,7 @@ ExternalProject_Add(libatomic_ops
 )
 ExternalProject_Add(extgc
   DEPENDS libatomic_ops
-  GIT_REPOSITORY https://github.com/robovm/bdwgc.git
+  GIT_REPOSITORY https://github.com/mobivm/bdwgc.git
   GIT_TAG feafbd724bef0641e0435f195f8d8ddd595515f6
   UPDATE_COMMAND ""
   PATCH_COMMAND bash -c "rm -rf libatomic_ops && ln -s ../../../libatomic_ops-prefix/src/libatomic_ops libatomic_ops"
@@ -290,3 +290,4 @@ add_subdirectory(core/src)
 add_subdirectory(debug/src)
 add_subdirectory(bc/src)
 add_subdirectory(rt)
+add_subdirectory(frameworksupport/src)

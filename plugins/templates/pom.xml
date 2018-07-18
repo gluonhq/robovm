@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.gluonhq</groupId>
     <artifactId>robovm-parent</artifactId>
-    <version>2.3.1-ios11</version>
+    <version>2.3.5-SNAPSHOT</version>
     <relativePath>../../</relativePath>
   </parent>
 
@@ -98,6 +98,7 @@
 
   <modules>
     <module>ios-single-view-no-ib</module>    
+    <module>ios-framework</module>
     <module>console</module>
     <module>templater</module>
   </modules>

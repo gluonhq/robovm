@@ -34,6 +34,9 @@ import org.robovm.apple.coredata.*;
 import org.robovm.apple.coreimage.*;
 import org.robovm.apple.coretext.*;
 import org.robovm.apple.corelocation.*;
+import org.robovm.apple.cloudkit.*;
+import org.robovm.apple.fileprovider.*;
+import org.robovm.apple.intents.*;
 /*</imports>*/
 
 /*<javadoc>*/
@@ -156,6 +159,11 @@ import org.robovm.apple.corelocation.*;
     @Property(selector = "mirroredScreen")
     public native UIScreen getMirroredScreen();
     /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @Property(selector = "isCaptured")
+    public native boolean isCaptured();
+    /**
      * @since Available in iOS 5.0 and later.
      */
     @Property(selector = "brightness")
@@ -195,6 +203,11 @@ import org.robovm.apple.corelocation.*;
      */
     @Property(selector = "nativeScale")
     public native @MachineSizedFloat double getNativeScale();
+    /**
+     * @since Available in iOS 10.3 and later.
+     */
+    @Property(selector = "maximumFramesPerSecond")
+    public native @MachineSizedSInt long getMaximumFramesPerSecond();
     /**
      * @since Available in iOS 10.0 and later.
      */
@@ -245,6 +258,11 @@ import org.robovm.apple.corelocation.*;
      */
     @GlobalValue(symbol="UIScreenBrightnessDidChangeNotification", optional=true)
     public static native NSString BrightnessDidChangeNotification();
+    /**
+     * @since Available in iOS 11.0 and later.
+     */
+    @GlobalValue(symbol="UIScreenCapturedDidChangeNotification", optional=true)
+    public static native NSString CapturedDidChangeNotification();
     
     /**
      * @since Available in iOS 4.0 and later.

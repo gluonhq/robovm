@@ -102,14 +102,16 @@ import org.robovm.apple.foundation.*;
      * @since Available in iOS 9.0 and later.
      */
     @Method(selector = "deleteObjectsOfType:predicate:withCompletion:")
-    public native void deleteObjectsOfType(HKObjectType objectType, NSPredicate predicate, @Block VoidBlock3<Boolean, Long, NSError> completion);
+    public native void deleteObjectsOfType(HKObjectType objectType, NSPredicate predicate, @Block("(,@MachineSizedUInt,)") VoidBlock3<Boolean, Long, NSError> completion);
     @Method(selector = "executeQuery:")
     public native void executeQuery(HKQuery query);
     @Method(selector = "stopQuery:")
     public native void stopQuery(HKQuery query);
     /**
      * @since Available in iOS 9.0 and later.
+     * @deprecated Deprecated in iOS 11.0.
      */
+    @Deprecated
     @Method(selector = "splitTotalEnergy:startDate:endDate:resultsHandler:")
     public native void splitTotalEnergy(HKQuantity totalEnergy, NSDate startDate, NSDate endDate, @Block VoidBlock3<HKQuantity, HKQuantity, NSError> resultsHandler);
     /**

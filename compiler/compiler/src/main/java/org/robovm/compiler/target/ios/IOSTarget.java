@@ -18,8 +18,11 @@ package org.robovm.compiler.target.ios;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,13 +42,14 @@ import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.lang3.tuple.Pair;
 import org.robovm.compiler.CompilerException;
+import org.robovm.compiler.config.AppExtension;
 import org.robovm.compiler.config.Arch;
 import org.robovm.compiler.config.Config;
 import org.robovm.compiler.config.OS;
 import org.robovm.compiler.config.Resource;
 import org.robovm.compiler.log.Logger;
-import org.robovm.compiler.log.LoggerProxy;
 import org.robovm.compiler.target.AbstractTarget;
 import org.robovm.compiler.target.LaunchParameters;
 import org.robovm.compiler.target.Launcher;
@@ -71,6 +75,25 @@ import com.dd.plist.PropertyListParser;
  *
  */
 public class IOSTarget extends AbstractTarget {
+    final List<String> excludedKeys = Arrays.asList(
+        "com.apple.developer.icloud-container-development-container-identifiers",
+        "com.apple.developer.icloud-container-environment",
+        "com.apple.developer.icloud-container-identifiers",
+        "com.apple.developer.icloud-services",
+        "com.apple.developer.restricted-resource-mode",
+        "com.apple.developer.ubiquity-container-identifiers",
+        "com.apple.developer.ubiquity-kvstore-identifier",
+        "inter-app-audio",
+        "com.apple.developer.homekit",
+        "com.apple.developer.healthkit",
+        "com.apple.developer.in-app-payments",
+        "com.apple.developer.associated-domains",
+        "com.apple.security.application-groups",
+        "com.apple.developer.maps",
+        "com.apple.developer.networking.vpn.api",
+        "com.apple.external-accessory.wireless-configuration"
+    );
+
     public static final String TYPE = "ios";
 
     private static File iosSimPath;
@@ -282,6 +305,13 @@ public class IOSTarget extends AbstractTarget {
         int majorVersionNumber = -1;
         try {
             majorVersionNumber = Integer.parseInt(minVersion.substring(0, minVersion.indexOf('.')));
+            int minMajorSupportedVersion = Integer.parseInt(minVersion.substring(0, config.getOs().getMinVersion().indexOf('.')));
+
+            if (majorVersionNumber < minMajorSupportedVersion) {
+                throw new CompilerException("MinimumOSVersion of " + minVersion + " is not supported. "
+                    + "The minimum version for this platform is " + config.getOs().getMinVersion());
+            }
+
         } catch (NumberFormatException e) {
             throw new CompilerException("Failed to get major version number from "
                     + "MinimumOSVersion string '" + minVersion + "'");
@@ -299,7 +329,13 @@ public class IOSTarget extends AbstractTarget {
         }
         ccArgs.add("-isysroot");
         ccArgs.add(sdk.getRoot().getAbsolutePath());
-        
+
+        // specify sdk version for linker
+        libArgs.add("-Xlinker");
+        libArgs.add("-sdk_version");
+        libArgs.add("-Xlinker");
+        libArgs.add(sdk.getVersion());
+
         // specify dynamic library loading path
         libArgs.add("-Xlinker");
         libArgs.add("-rpath");
@@ -331,15 +367,10 @@ public class IOSTarget extends AbstractTarget {
                 // Copy the provisioning profile
                 copyProvisioningProfile(provisioningProfile, installDir);
                 boolean getTaskAllow = provisioningProfile.getType() == Type.Development;
-                signFrameworks(installDir, getTaskAllow);
+                signFrameworks(signIdentity, installDir);
+                provisionAppExtensions(signIdentity, installDir);
+                signAppExtensions(signIdentity, installDir, getTaskAllow);
                 codesignApp(signIdentity, getOrCreateEntitlementsPList(getTaskAllow, getBundleId()), installDir);
-                // For some odd reason there needs to be a symbolic link in the
-                // root of
-                // the app bundle named CodeResources pointing at
-                // _CodeSignature/CodeResources
-                new Executor(config.getLogger(), "ln")
-                        .args("-f", "-s", "_CodeSignature/CodeResources", new File(installDir, "CodeResources"))
-                        .exec();
             }
         }
     }
@@ -351,6 +382,12 @@ public class IOSTarget extends AbstractTarget {
                 profile.getEntitlements().objectForKey("application-identifier"));
         FileUtils.copyFile(profile.getFile(), new File(destDir, "embedded.mobileprovision"));
     }
+
+    @Override
+    public void prepareLaunch() throws IOException {
+        prepareLaunch(getAppDir());
+    }
+
 
     protected void prepareLaunch(File appDir) throws IOException {
         super.doInstall(appDir, getExecutable(), appDir);
@@ -364,30 +401,122 @@ public class IOSTarget extends AbstractTarget {
                 ldid(getOrCreateEntitlementsPList(true, getBundleId()), appDir);
             } else {
                 copyProvisioningProfile(provisioningProfile, appDir);
-                signFrameworks(appDir, true);
+                boolean getTaskAllow = provisioningProfile.getType() == Type.Development;
+                signFrameworks(signIdentity, appDir);
+                provisionAppExtensions(signIdentity, appDir);
+                signAppExtensions(signIdentity, appDir, getTaskAllow);
                 // sign the app
-                codesignApp(signIdentity, getOrCreateEntitlementsPList(true, getBundleId()), appDir);
+                codesignApp(signIdentity, getOrCreateEntitlementsPList(getTaskAllow, getBundleId()), appDir);
+            }
+        } else { // simulator
+            if (sdk.getVersionCode() >= 0x0B0300) {
+                // code signing of frameworks and app extensions are required since iOS 11.3
+                signFrameworks(SigningIdentity.ADHOC, appDir);
+                signAppExtensions(SigningIdentity.ADHOC, appDir, true);
             }
         }
     }
 
-    private void signFrameworks(File appDir, boolean getTaskAllow) throws IOException {
+    private void signFrameworks(SigningIdentity identity, File appDir) throws IOException {
         // sign dynamic frameworks first
         File frameworksDir = new File(appDir, "Frameworks");
         if (frameworksDir.exists() && frameworksDir.isDirectory()) {
             // Sign swift rt libs
             for (File swiftLib : frameworksDir.listFiles()) {
                 if (swiftLib.getName().endsWith(".dylib")) {
-                    codesignSwiftLib(signIdentity, swiftLib);
+                    codesignSwiftLib(identity, swiftLib);
                 }
             }
 
             // sign embedded frameworks
             for (File framework : frameworksDir.listFiles()) {
                 if (framework.isDirectory() && framework.getName().endsWith(".framework")) {
-                    codesignCustomFramework(signIdentity, framework);
+                    codesignCustomFramework(identity, framework);
                 }
             }
+        }
+    }
+
+    private void signAppExtensions(SigningIdentity identity, File appDir, boolean getTaskAllow) throws IOException {
+        // sign dynamic frameworks first
+        File extensionsDir = new File(appDir, "PlugIns");
+        if (extensionsDir.exists() && extensionsDir.isDirectory()) {
+            // sign embedded app-extensions
+            for (File extension : extensionsDir.listFiles()) {
+                if (extension.isDirectory() && extension.getName().endsWith(".appex")) {
+                    File entitlements = null;
+                    if (provisioningProfile != null) {
+                        String bundleId =  provisioningProfile.getAppIdPrefix() + "." + getBundleId() + "." + extension.getName().replace(".appex", "");
+                        entitlements = createEntitlementForAppEx(getTaskAllow, bundleId);
+                    }
+
+                    // now sign
+                    codesignAppExtension(identity, entitlements, extension);
+                }
+            }
+        }
+    }
+
+    /**
+     * generates simple emtitlement plist which is required for AppEx during submit to app store
+     */
+    private File createEntitlementForAppEx(boolean getTaskAllow, String bundleId) throws IOException {
+        try {
+            File destFile = new File(config.getTmpDir(), "AppExtEntitlements.plist");
+            NSDictionary dict = (NSDictionary) PropertyListParser.parse(IOUtils.toByteArray(getClass().getResourceAsStream(
+                        "/Entitlements.plist")));
+            dict.put("application-identifier", bundleId);
+            dict.put("get-task-allow", getTaskAllow);
+            PropertyListParser.saveAsXML(dict, destFile);
+            return destFile;
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * finds and copies provisioning profile for AppExtension
+     * @param signIdentity that matches profile
+     * @param installDir of application
+     */
+    private void provisionAppExtensions(SigningIdentity signIdentity, File installDir) throws IOException {
+        File pluginsDir = new File(installDir, "PlugIns");
+
+        for (AppExtension extension : config.getAppExtensions()) {
+            // find extension
+            ProvisioningProfile appExtProfile;
+            String profileName = extension.getProfile();
+            if (profileName != null) {
+                // profile is specified in robovm.xml
+                appExtProfile = ProvisioningProfile.find(ProvisioningProfile.list(), profileName);
+            } else {
+                // find profile that matches app ext bundle id
+                String bundleId = getBundleId() + "." + extension.getName();
+                appExtProfile = ProvisioningProfile.find(ProvisioningProfile.list(), signIdentity, bundleId);
+            }
+
+
+            if (appExtProfile != null) {
+                File extPath = new File(pluginsDir, extension.getName() + ".appex");
+                config.getLogger().info("Copying %s provisioning profile for : %s (%s)",
+                        appExtProfile.getType(),
+                        appExtProfile.getName(),
+                        appExtProfile.getEntitlements().objectForKey("application-identifier"));
+                FileUtils.copyFile(appExtProfile.getFile(), new File(extPath, "embedded.mobileprovision"));
+            } else {
+
+            }
+            if (provisioningProfile == null) {
+                String bundleId = "*";
+                if (config.getIosInfoPList() != null && config.getIosInfoPList().getBundleIdentifier() != null) {
+                    bundleId = config.getIosInfoPList().getBundleIdentifier();
+                }
+                provisioningProfile = ProvisioningProfile.find(ProvisioningProfile.list(), signIdentity, bundleId);
+            }
+
+
         }
     }
 
@@ -407,6 +536,12 @@ public class IOSTarget extends AbstractTarget {
         config.getLogger().info("Code signing framework '%s' using identity '%s' with fingerprint %s", frameworkDir.getName(), identity.getName(),
                 identity.getFingerprint());
         codesign(identity, null, true, false, true, frameworkDir);
+    }
+
+    private void codesignAppExtension(SigningIdentity identity, File entitlementsPList, File extensionDir) throws IOException {
+        config.getLogger().info("Code signing app-extension '%s' using identity '%s' with fingerprint %s", extensionDir.getName(), identity.getName(),
+                identity.getFingerprint());
+        codesign(identity, entitlementsPList, false, false, true, extensionDir);
     }
 
     private void codesign(SigningIdentity identity, File entitlementsPList, boolean preserveMetadata, boolean verbose, boolean allocate, File target) throws IOException {
@@ -461,7 +596,7 @@ public class IOSTarget extends AbstractTarget {
             if (provisioningProfile != null) {
                 NSDictionary profileEntitlements = provisioningProfile.getEntitlements();
                 for (String key : profileEntitlements.allKeys()) {
-                    if (dict.objectForKey(key) == null) {
+                    if (dict.objectForKey(key) == null && !excludedKeys.contains(key)) {
                         dict.put(key, profileEntitlements.objectForKey(key));
                     }
                 }
@@ -481,16 +616,7 @@ public class IOSTarget extends AbstractTarget {
         final File dsymDir = new File(dir.getParentFile(), dir.getName() + ".dSYM");
         final File exePath = new File(dir, executable);
         FileUtils.deleteDirectory(dsymDir);
-        Logger logger = new LoggerProxy(config.getLogger()) {
-            @Override
-            public void warn(String format, Object... args) {
-                if (!(format.startsWith("warning:") && format.contains("could not find object file symbol for symbol"))) {
-                    // Suppress this kind of warnings for now. See robovm/robovm#1126.
-                    super.warn(format, args);
-                }
-            }
-        };
-        final Process process = new Executor(logger, "xcrun")
+        final Process process = new Executor(config.getLogger(), "xcrun")
                 .args("dsymutil", "-o", dsymDir, exePath)
                 .execAsync();
         if (copyToIndexedDir) {
@@ -521,15 +647,11 @@ public class IOSTarget extends AbstractTarget {
 
     @Override
     protected Process doLaunch(LaunchParameters launchParameters) throws IOException {
-        prepareLaunch(getAppDir());
+        // in IDEA prepare for launch is happening during build phase to not block calling thread
+        // all other plugins will prepare here
+        if (!config.isManuallyPreparedForLaunch())
+            prepareLaunch();
         Process process = super.doLaunch(launchParameters);
-        /*if (launchParameters instanceof IOSSimulatorLaunchParameters) {
-            File script = File.createTempFile("BISTF", ".scpt");
-            FileUtils.copyURLToFile(getClass().getResource("/BringIOSSimulatorToFront.scpt"), script);
-            new Executor(config.getHome().isDev() ? config.getLogger() : Logger.NULL_LOGGER, "osascript")
-                    .args(script)
-                    .execAsync();
-        }*/
         return process;
     }
 
@@ -570,10 +692,53 @@ public class IOSTarget extends AbstractTarget {
                     new PrefixFileFilter("libswift"),
                     new SuffixFileFilter(".dylib")));
 
-            if (swiftLibs.length > 0){
+            if (swiftLibs != null && swiftLibs.length > 0){
                 File swiftSupportDir = new File(tmpDir, "SwiftSupport");
                 swiftSupportDir.mkdir();
                 copySwiftLibs(Arrays.asList(swiftLibs), swiftSupportDir);
+            }
+        }
+
+        // check app extension and add suport files if needed
+        File pluginsDir = new File(appDir, "PlugIns");
+        if (pluginsDir.exists()){
+            String[] plugins = pluginsDir.list();
+            if (plugins != null && plugins.length > 0) {
+                final String iStickersExtId = "com.apple.message-payload-provider";
+                boolean hasStickers = false;
+                for (String p : plugins) {
+                    File infoPlistFile = new File(new File(pluginsDir, p), "Info.plist");
+                    if (!infoPlistFile.exists())
+                        continue;
+                    try {
+                        NSDictionary infoPlist = (NSDictionary)PropertyListParser.parse(infoPlistFile);
+                        NSDictionary extensionDict = (NSDictionary) infoPlist.get("NSExtension");
+                        if (extensionDict != null) {
+                            hasStickers |= iStickersExtId.equals(extensionDict.get("NSExtensionPointIdentifier").toJavaObject());
+                            // other ext types should go here if requried
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+
+                // provide support
+                if (hasStickers) {
+                    // for stickers extension
+                    config.getLogger().info("Copying support files for Stickers app extension");
+                    File xcodePath = new File(ToolchainUtil.findXcodePath());
+                    File stickersExtSupportStub = new File(xcodePath, "Platforms/iPhoneOS.platform/Library/" +
+                            "Application Support/MessagesApplicationExtensionStub/MessagesApplicationExtensionStub");
+                    if (!stickersExtSupportStub.exists()) {
+                        throw new FileNotFoundException("Stickers support: bi MessagesApplicationStub or MessagesApplicationExtensionStub found in "
+                                + new File(xcodePath, "Platforms/iPhoneOS.platform/Library/Application Support/").getAbsolutePath());
+                    }
+
+                    File stickersExtSupportDestDir = new File(tmpDir, "MessagesApplicationExtensionSupport");
+
+                    stickersExtSupportDestDir.mkdir();
+                    Files.copy(stickersExtSupportStub.toPath(), new File(stickersExtSupportDestDir, stickersExtSupportStub.getName()).toPath(),
+                            StandardCopyOption.COPY_ATTRIBUTES);
+                }
             }
         }
 
@@ -659,6 +824,7 @@ public class IOSTarget extends AbstractTarget {
         return config.getExecutableName();
     }
 
+    @Override
     protected String getBundleId() {
         if (config.getIosInfoPList() != null) {
             String bundleIdentifier = config.getIosInfoPList().getBundleIdentifier();
@@ -835,28 +1001,29 @@ public class IOSTarget extends AbstractTarget {
             arch = config.getArch();
         }
 
-        if (isDeviceArch(arch)) {
-            if (!config.isSkipLinking() && !config.isIosSkipSigning()) {
-                signIdentity = config.getIosSignIdentity();
-                if (signIdentity == null) {
-                    signIdentity = SigningIdentity.find(SigningIdentity.list(),
-                            "/(?i)iPhone Developer|iOS Development/");
-                }
-            }
-        }
-
         if (config.getIosInfoPList() != null) {
             config.getIosInfoPList().parse(config.getProperties());
         }
 
         if (isDeviceArch(arch)) {
-            if (!config.isSkipLinking() &&!config.isIosSkipSigning()) {
+            if (!config.isSkipLinking() && !config.isIosSkipSigning()) {
+                signIdentity = config.getIosSignIdentity();
                 provisioningProfile = config.getIosProvisioningProfile();
-                if (provisioningProfile == null) {
-                    String bundleId = "*";
-                    if (config.getIosInfoPList() != null && config.getIosInfoPList().getBundleIdentifier() != null) {
-                        bundleId = config.getIosInfoPList().getBundleIdentifier();
-                    }
+                String bundleId = "*";
+                if (config.getIosInfoPList() != null && config.getIosInfoPList().getBundleIdentifier() != null) {
+                    bundleId = config.getIosInfoPList().getBundleIdentifier();
+                }
+
+                if (signIdentity == null && provisioningProfile == null) {
+                    // both identity and provisioningProfile are set to auto, start with picking profile s
+                    Pair<SigningIdentity, ProvisioningProfile> pair = ProvisioningProfile.find(ProvisioningProfile.list(), SigningIdentity.list("/(?i)iPhone Developer|iOS Development/"), bundleId);
+                    signIdentity = pair.getLeft();
+                    provisioningProfile = pair.getRight();
+                } else if (signIdentity == null) {
+                    // provisioning profile was specified, need to find a signing identity that matches it
+                    signIdentity = SigningIdentity.find(SigningIdentity.list(), "/(?i)iPhone Developer|iOS Development/", provisioningProfile);
+                } else if (provisioningProfile == null) {
+                    // find profile that matches identity and bundle id
                     provisioningProfile = ProvisioningProfile.find(ProvisioningProfile.list(), signIdentity, bundleId);
                 }
             }

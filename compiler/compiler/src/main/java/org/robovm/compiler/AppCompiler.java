@@ -56,7 +56,6 @@ import org.robovm.compiler.config.Config;
 import org.robovm.compiler.config.Config.TreeShakerMode;
 import org.robovm.compiler.config.OS;
 import org.robovm.compiler.config.Resource;
-import org.robovm.compiler.config.StripArchivesConfig;
 import org.robovm.compiler.config.StripArchivesConfig.StripArchivesBuilder;
 import org.robovm.compiler.log.ConsoleLogger;
 import org.robovm.compiler.plugin.LaunchPlugin;
@@ -1099,7 +1098,7 @@ public class AppCompiler {
             String osName = System.getProperty("os.name", "Unknown");
             String osArch = System.getProperty("os.arch", "Unknown");
             String osVersion = System.getProperty("os.version", "Unknown");
-            UpdateChecker t = new UpdateChecker("http://download.robovm.org/version?"
+            UpdateChecker t = new UpdateChecker("http://robovm.mobidevelop.com/version?"
                     + "uuid=" + URLEncoder.encode(uuid, "UTF-8") + "&"
                     + "version=" + URLEncoder.encode(Version.getVersion(), "UTF-8") + "&"
                     + "osName=" + URLEncoder.encode(osName, "UTF-8") + "&"

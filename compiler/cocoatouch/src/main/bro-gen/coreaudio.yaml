@@ -9,7 +9,7 @@ typedefs: {}
     
 enums:
     AudioErrorCode: {first: kAudio_UnimplementedError, prefix: kAudio_, suffix: Error}
-    AudioFormat: {first: kAudioFormatLinearPCM, prefix: kAudioFormat, marshaler: ValuedEnum.AsMachineSizedUIntMarshaler}
+    AudioFormat: {first: kAudioFormatLinearPCM, prefix: kAudioFormat}
     AudioFormatFlags: 
         first: kAudioFormatFlagIsFloat
         bits: true
@@ -26,7 +26,8 @@ enums:
     AudioChannelCoordinate: {first: kAudioChannelCoordinates_LeftRight}
     AudioChannelFlags: {first: kAudioChannelFlags_AllOff, prefix: kAudioChannelFlags_, bits: true, marshaler: Bits.AsMachineSizedIntMarshaler}
     AudioChannelLayoutTag: {first: kAudioChannelLayoutTag_UseChannelDescriptions, skip_none: true, prefix: kAudioChannelLayoutTag_, bits: true}
-    
+    SMPTETimeFlags: {prefix: kSMPTETime}
+    MPEG4ObjectID: {prefix: kMPEG4Object_}
 classes:
     # Structs:
     AudioValueRange: # DONE
@@ -49,7 +50,6 @@ classes:
             name: outputDataSize
             visibility: private
     AudioBuffer: # DONE
-        skip_def_constructor: true
         mNumberChannels:
             name: numberChannels
         mDataByteSize:
@@ -59,12 +59,12 @@ classes:
             name: data
             exclude: true
     AudioBufferList: # DONE
+        skip_def_constructor: true
         mNumberBuffers:
             name: numberBuffers
             visibility: protected
         mBuffers:
             name: buffers0
-            type: AudioBuffer.AudioBufferPtr
             visibility: protected
     AudioStreamBasicDescription: # DONE
         mSampleRate:

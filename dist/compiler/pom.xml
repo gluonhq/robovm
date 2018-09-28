@@ -5,13 +5,13 @@
   <parent>
     <groupId>com.gluonhq</groupId>
     <artifactId>robovm-dist-parent</artifactId>
-    <version>2.3.1-ios12</version>
+    <version>2.3.5-ios12</version>
   </parent>
 
   <artifactId>robovm-dist-compiler</artifactId>
   <name>RoboVM Distribution (compiler jars)</name>
   <packaging>jar</packaging>
-  <version>2.3.1-ios12</version>
+  <version>2.3.5-ios12</version>
 
   <properties>
     <robovmdir>${basedir}/../../compiler</robovmdir>
